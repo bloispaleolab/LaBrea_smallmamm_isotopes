@@ -66,6 +66,15 @@ for (j in 1:length(leftovers)){
 # note: 223521 used in SIBERraw.csv, 223587 used in Iso.Clim.R script. The two samples have same C:N, isotope values, slightly different dates (26940 +- 320 vs 26710 +- 110). We will use sample with more precise age range (223587). 
 
 leftoverDF$correctUCIAMS<- c(198206, 217076, 217077, 223495, 223587)
+
+## CHECK!
+leftoverDF[,c(1,4)]
+# Should have:
+# 1 LACMP23-33228        198206
+# 2 LACMHC-142773        217076
+# 3 LACMHC-142779        217077
+# 4 LACMP23-35541        223495
+# 5 LACMP23-40642        223587
   
 ### merge repeated samples ----
 for (i in 1:nrow(leftoverDF)){
@@ -105,9 +114,16 @@ Taxon[which(Species=="Sylvilagus sp")] <- 'Sylvilagus'
 mergedDat$Species <- Species
 mergedDat$Taxon <- Taxon
 
-focalTaxaDat <- mergedDat[which(mergedDat$Taxon == 'Sylvilagus' | mergedDat$Taxon == "Otospermophilus"),] # remove non-squirrels or sylvilagus
-trimmedDat <- focalTaxaDat[-which(is.na(focalTaxaDat$X14C_age_error)),] # remove samples without dates or with too old of dates
-trimmedDat <- trimmedDat[-which(is.na(trimmedDat$del15N_permil)),] # remove samples without isotopes
+trimmedDat <- mergedDat[-which(is.na(mergedDat$del15N_permil)),] # remove samples without isotopes
+trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_BP)),] # remove samples without dates 
+
+# write this dataset to save for use in Fig 5.
+write.csv(trimmedDat, file="data/processed/final_dataset_alltaxa.csv", row.names=F) # includes taxa in addition to squirrels, rabbits
+
+# further trim down dataset for primary analyses
+trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_error)),] # remove samples with too old of dates
+trimmedDat <- trimmedDat[which(trimmedDat$Taxon == 'Sylvilagus' | trimmedDat$Taxon == "Otospermophilus"),] # remove non-squirrels or sylvilagus
+
 
 ## Section 2: Match calibrated ages to samples ----
 
@@ -126,37 +142,12 @@ sample_median_ages$median_age <- as.numeric(sample_median_ages$median_age)
 ### data cleaning on allAges file----
 allAges<- allAges[allAges$probability != 0, ] # remove age estimates with 0 probability
 
+#remove repetitive information and duplicate samples from allAges file
 sampsToDelete <- unique(allAges$name)[which(is.na(match(unique(allAges$name), samples)))]
 for (i in 1:length(sampsToDelete)){
   allAges<- allAges[-which(allAges$name==sampsToDelete[i]),]
 }
 
-
-#remove repetitive information and duplicate samples 
-# see notes, line 55
-allAges<- allAges[!(allAges$name=="R Combine 1 LACMP23-33228" |  # pooled date for the two runs of same specimen  y
-                      allAges$name=="R Combine 2 LACMHC-142773" | # pooled date for the two runs of same specimen y
-                      allAges$name=="R Combine 3 LACMHC-142779" | # pooled date for the two runs of same specimen y
-                      allAges$name=="R Combine 4 LACMP23-35541" | # pooled date for the two runs of same specimen y
-                      allAges$name=="R Combine 5 LACMP23-40642" | # pooled date for the two runs of same specimen y
-                      allAges$name=="UCIAMS 198302" |  # using UCIAMS 198206 instead #y
-                      allAges$name=="UCIAMS 216768" | # using UCIAMS 217076 instead #y
-                      allAges$name=="UCIAMS 216770" |  # using UCIAMS 217077 instead #y
-                      allAges$name=="UCIAMS 223585" | # using UCIAMS 223495 instead #y
-                      allAges$name=="UCIAMS 223521"),] # using UCIAMS 223587 instead #y
-
-#remove specimens that are not rabbits and squirrels
-allAges<- allAges[!(allAges$name=="UCIAMS 198199" | #y
-                      allAges$name=="UCIAMS 198200" | #y
-                      allAges$name=="UCIAMS 198208" | #y
-                      allAges$name=="UCIAMS 216782" |  #y
-                      allAges$name=="UCIAMS 223520" | #y
-                      allAges$name=="UCIAMS 198297"),] #y
-
-#remove specimens without stable isotope values & unmeasureable dates
-allAges<- allAges[!(allAges$name=="UCIAMS 223515" | #y
-                      allAges$name=="UCIAMS 223519" |  #y
-                      allAges$name=="UCIAMS 223522"),] #y
 
 ## Section 3: Match d180 to all age estimates ----
 # (both median_age as well as the full distribution of ages) for every sample 
@@ -204,7 +195,6 @@ rm(d18O_hendy_medianage)
 rm(d18O_ngrip_medianage)
 
 ### at end of Section 3, have 2 main files for later use: ###
-
 # allAges_d18O (stores both ngrip and hendy)
 # sample_median_ages (stores both ngrip and hendy)
 
@@ -277,8 +267,7 @@ matchedDF_all$time_group <- time_group
 # d18O_ngrip #primary d18O estimate at median age - hendy
 # time_group # pleistocene or holocene
 
-
-
+write.csv(matchedDF_all, file="data/processed/final_dataset_focaltaxa.csv", row.names = F) #just the final set of squirrels and rabbits
 
 
 
