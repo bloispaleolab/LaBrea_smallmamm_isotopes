@@ -8,10 +8,10 @@ library(scales)
 library(RColorBrewer)
 library(rstatix)
 
+iso_dat_orig<-read.csv("data/processed/Interpolation/IsoClim_interpolated_cal20.csv") # All rabbits and Squirrels with mean calibrated ages < 50 ka BP
 
 # Figure 1 ####
-iso_dat<-read.csv("data/processed/Interpolation/IsoClim_interpolated_cal20.csv") # All rabbits and Squirrels with mean calibrated ages < 50 ka BP
-iso_dat <- read.csv(file="data/processed/final_dataset_focaltaxa.csv", header=T)
+iso_dat <- read.csv(file="data/processed/final_dataset_focaltaxa_finalAMSruns_with_isotopes_with_all_dates.csv", header=T) # All rabbits and Squirrels with isotopes - some have no dates, or dates too old to calibrate 
 
 
 ## Inter-specific - Compare squirrels to rabbits ----
@@ -43,16 +43,17 @@ p4 <- ggboxplot(iso_dat, x = "Taxon", y = "del15N_permil",
         legend.position = "none")
 #  Add p-value
 genus_N <- p4 + stat_compare_means(method = "wilcox.test", label.x = 2)
-
+genus_N
 
 ## Intra - specific diet ---- 
 
 ## Compare desert cottontails to brush rabbits
 
-iso_rabbits<- iso_dat[grep("S. audubonii|S. bachmani", iso_dat$Species), c(3:6)]
+iso_rabbits<- iso_dat[grep("S. audubonii|S. bachmani", iso_dat$Species), c('del13C_permil', 'del15N_permil', 'Species', 'Taxon')]
 
 #carbon
 wilcox.c.rabbits <- wilcox.test(del13C_permil~Species, data=iso_rabbits, correct = TRUE, alternative = "two.sided")
+wilcox.c.rabbits
 #t.test(del13C_permil~Taxon, mu=0, alt="two.sided", conf=0.95, var.eq=F, paired=F, data=iso_rabbits)
 
 p1 <- ggboxplot(iso_rabbits, x = "Species", y = "del13C_permil",
@@ -61,16 +62,14 @@ p1 <- ggboxplot(iso_rabbits, x = "Species", y = "del13C_permil",
   labs(y = expression({delta}^13*C~'\u2030'))+
   theme(axis.title.x=element_blank(),
         legend.position = "none")
-
 #  Add p-value
-# p1 + stat_compare_means()
-# Change method
 rabbits_C <- p1 + stat_compare_means(method = "wilcox.test", label.x = 2)
 #p-values appear on figure as a single plot, but not on multiplots
 rabbits_C
 
 #nitrogen
 wilcox.n.rabbits <- wilcox.test(del15N_permil~Species, data=iso_rabbits, correct = TRUE)
+wilcox.n.rabbits
 
 p2 <- ggboxplot(iso_rabbits, x = "Species", y = "del15N_permil",
                 color = "Species", palette = c("orange", "darkorange3"),
@@ -80,10 +79,8 @@ p2 <- ggboxplot(iso_rabbits, x = "Species", y = "del15N_permil",
   theme(axis.title.x=element_blank(),
         legend.position = "none")
 #  Add p-value
-#p2 + stat_compare_means()
-# Change method
 rabbits_N <- p2 + stat_compare_means(method = "wilcox.test", label.x = 2)
-
+rabbits_N
 
 ## Arrange original final figure 1 ----
 # figure <- ggarrange(p3, p4, p1, p2,
@@ -108,14 +105,14 @@ par(bty="l", mfcol=c(2,2), mar=c(4,4,1,1)+0.1)
 # create new dataframes and colors
 #data
 Cdatalist <- list(iso_dat$del13C_permil[which(iso_dat$Taxon=="Otospermophilus")],
-                  iso_dat$del13C_permil[which(iso_dat$Taxon=="Sylvilagus ")])
+                  iso_dat$del13C_permil[which(iso_dat$Taxon=="Sylvilagus")])
 
 Ndatalist <- list(iso_dat$del15N_permil[which(iso_dat$Taxon=="Otospermophilus")],
-                  iso_dat$del15N_permil[which(iso_dat$Taxon=="Sylvilagus ")])
+                  iso_dat$del15N_permil[which(iso_dat$Taxon=="Sylvilagus")])
 
 # colors
 oto.col<- rep("royalblue2", length(Ndatalist[[1]]))
-syl.col <- iso_dat$Species[which(iso_dat$Taxon=="Sylvilagus ")]
+syl.col <- iso_dat$Species[which(iso_dat$Taxon=="Sylvilagus")]
 syl.col[which(syl.col=="Leporidae")] <- "darkorange"
 syl.col[which(syl.col=="Sylvilagus sp")] <- "darkorange"
 syl.col[which(syl.col=="S. bachmani")] <- "red1"
@@ -123,9 +120,7 @@ syl.col[which(syl.col=="S. audubonii")] <- "gold1"
 
 colorlist <- list(oto.col, syl.col)
 
-#carbon
-wilcox.c.taxon <- wilcox.test(del13C_permil~Taxon, data=iso_dat, correct = TRUE)
-
+# carbon, interspecific
 # create basic boxplot
 boxplot(del13C_permil ~ Taxon, data=iso_dat, col = "white", ylab = "", cex.axis=0.75)
 
@@ -137,9 +132,7 @@ for (i in 1:2) {
 mtext(expression({delta}^13*C~'value ('~'\u2030'~', VPDB)'), side=2, line = 2.25)
 legend("top", legend=paste0("W = ", wilcox.c.taxon$statistic, "; p = ", round(wilcox.c.taxon$p.value, 3)), bty="n", cex=0.75)
 
-#nitrogen
-wilcox.n.taxon <- wilcox.test(del15N_permil~Taxon, data=iso_dat, correct = TRUE)
-
+# nitrogen, interspecific
 # create basic boxplot
 boxplot(del15N_permil ~ Taxon, data=iso_dat, col = "white", ylab = "", cex.axis=0.75)
 
@@ -155,11 +148,7 @@ legend("top", legend=paste0("W = ", wilcox.n.taxon$statistic, "; p = ", round(wi
 
 ## Compare desert cottontails to brush rabbits
 
-iso_rabbits<- iso_dat[grep("S. audubonii|S. bachmani", iso_dat$Species), c(3:6)]
-
-#carbon
-wilcox.c.rabbits <- wilcox.test(del13C_permil~Species, data=iso_rabbits, correct = TRUE, alternative = "two.sided")
-
+# carbon, introspecific
 # create basic boxplot
 boxplot(del13C_permil ~ Species, data=iso_rabbits, col = "white", ylab = "", cex.axis=0.75)
 # add individual data points
@@ -167,9 +156,7 @@ stripchart(del13C_permil ~ Species, data=iso_rabbits, vertical=TRUE, add=TRUE, m
 mtext(expression({delta}^13*C~'value ('~'\u2030'~', VPDB)'), side=2, line = 2.25)
 legend("top", legend=paste0("W = ", wilcox.c.rabbits$statistic, "; p = ", round(wilcox.c.rabbits$p.value, 3)), bty="n", cex=0.75)
 
-#nitrogen
-wilcox.n.rabbits <- wilcox.test(del15N_permil~Species, data=iso_rabbits, correct = TRUE)
-
+# nitrogen, intraspecific
 # create basic boxplot
 boxplot(del15N_permil ~ Species, data=iso_rabbits, col = "white", ylab = "", cex.axis=0.75)
 # add individual data points

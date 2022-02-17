@@ -26,16 +26,18 @@ for (i in 1:length(specimens)){
   IsoSamp <- (which(isoSub$Museum_Number == id))
   DatesSamp <- (which(datesSub$Museum_Number == id))
   
-  if (length(IsoSamp) == 1 && length(DatesSamp) == 1){
+  if (length(IsoSamp) == 1 && length(DatesSamp) == 1){ # samples with dates and isotopes
     mergedDat <- rbind(mergedDat, cbind(datesSub[DatesSamp, c("UCIAMS_Number", "Museum_Number", "prelim_taxon_name", "X14C_age_BP", "X14C_age_error")], isoSub[IsoSamp, c("del15N_permil",  "del13C_permil")]))
   }
-  if (length(IsoSamp) == 1 && length(DatesSamp) == 0){
+  if (length(IsoSamp) == 1 && length(DatesSamp) == 0){ # samples with isotopes and no dates
     tempDat <- cbind(isoSub[IsoSamp, c("UCIAMS_Number", "Museum_Number", "prelim_taxon_name")], NA, NA,
                      isoSub[IsoSamp, c("del15N_permil",  "del13C_permil")])
     colnames(tempDat)[4:5] <- c("X14C_age_BP", "X14C_age_error")
     mergedDat <- rbind(mergedDat, tempDat)
   }
 }
+
+mergedDat$repeated <- as.vector(rep("N", nrow(mergedDat)))
 
 ### figure out which samples had repeated dates or isotopes ----
 leftovers <- specimens[which(is.na(match(specimens, mergedDat$Museum_Number)))]
@@ -66,10 +68,11 @@ for (j in 1:length(leftovers)){
 # note: 223521 used in SIBERraw.csv, 223587 used in Iso.Clim.R script. The two samples have same C:N, isotope values, slightly different dates (26940 +- 320 vs 26710 +- 110). We will use sample with more precise age range (223587). 
 
 leftoverDF$correctUCIAMS<- c(198206, 217076, 217077, 223495, 223587)
+leftoverDF$repeatedUCIAMS <- c(198302, 216768, 216770, 223585, 223521)
 
 ## CHECK!
 leftoverDF[,c(1,4)]
-# Should have:
+# Should have in correctUCIAMS:
 # 1 LACMP23-33228        198206
 # 2 LACMHC-142773        217076
 # 3 LACMHC-142779        217077
@@ -77,13 +80,19 @@ leftoverDF[,c(1,4)]
 # 5 LACMP23-40642        223587
   
 ### merge repeated samples ----
+# merge correct and repeated samples in turn
 for (i in 1:nrow(leftoverDF)){
-  ams <- leftoverDF$correctUCIAMS[i]
-  IsoSamp <- (which(isoSub$UCIAMS_Number == ams))
-  DatesSamp <- (which(datesSub$UCIAMS_Number == ams))
   
-  mergedDat <- rbind(mergedDat, cbind(datesSub[DatesSamp, c("UCIAMS_Number", "Museum_Number", "prelim_taxon_name", "X14C_age_BP", "X14C_age_error")], isoSub[IsoSamp, c("del15N_permil",  "del13C_permil")]))
- 
+  correct_ams <- leftoverDF$correctUCIAMS[i]
+  repeated_ams <- leftoverDF$repeatedUCIAMS[i]
+  
+  IsoSamp <- c(which(isoSub$UCIAMS_Number == correct_ams), which(isoSub$UCIAMS_Number == repeated_ams))
+  DatesSamp <- c(which(datesSub$UCIAMS_Number == correct_ams), which(datesSub$UCIAMS_Number == repeated_ams))
+  
+  repeated <- as.vector(c("N", "Y"))
+  
+  mergedDat <- rbind(mergedDat, cbind(datesSub[DatesSamp, c("UCIAMS_Number", "Museum_Number", "prelim_taxon_name", "X14C_age_BP", "X14C_age_error")], isoSub[IsoSamp, c("del15N_permil",  "del13C_permil")], repeated))
+  
 }
 
 ### create the Species and Taxon columns ----
@@ -114,49 +123,29 @@ Taxon[which(Species=="Sylvilagus sp")] <- 'Sylvilagus'
 mergedDat$Species <- Species
 mergedDat$Taxon <- Taxon
 
-####
-## Calculate basic statistics for paper ----
-# currently within section 'Samples, dates, and stable isotope values' - 1st section of results
-nrow(mergedDat[-which(is.na(mergedDat$X14C_age_BP)),]) # 84 samples with dates 
-nrow(mergedDat[-which(is.na(mergedDat$del15N_permil)),]) # 82 samples with isotopes 
-length(which(mergedDat[-which(is.na(mergedDat$del15N_permil)),'Taxon'] == "Sylvilagus")) + length(which(mergedDat[-which(is.na(mergedDat$del15N_permil)),'Taxon'] == "Otospermophilus")) # 76 samples with isotopes from the focal taxa
-tempFocalDat <- mergedDat[which(mergedDat$Taxon == 'Sylvilagus' | mergedDat$Taxon == "Otospermophilus"),] # remove non-squirrels or sylvilagus
-tempFocalDat <- tempFocalDat[-which(is.na(tempFocalDat$del15N_permil)),] # remove samples without isotopes
+# save the most expanded dataset
+write.csv(mergedDat, file="data/processed/final_dataset_alldata.csv", row.names=F) # includes taxa in addition to squirrels, rabbits, as well as the repeated AMS samples.
 
-# isotope stats focal taxa
-range(tempFocalDat$del15N_permil) # [1] 3.2 9.9
-range(tempFocalDat$del13C_permil) # [1] -22.5 -18.5
 
-# isotope stats other small mammals
-range(mergedDat[c(which(mergedDat$Taxon=="Neotoma"), which(mergedDat$Taxon=="Microtus"), which(mergedDat$Taxon=="Thomomys")),'del15N_permil'], na.rm=T)
-range(mergedDat[c(which(mergedDat$Taxon=="Neotoma"), which(mergedDat$Taxon=="Microtus"), which(mergedDat$Taxon=="Thomomys")),'del13C_permil'], na.rm=T)
+# filter and save final datasets for different analyses
+mergedDat <- mergedDat[which(mergedDat$repeated == "N"),]
+write.csv(mergedDat, file="data/processed/final_dataset_alltaxa_finalAMSruns.csv", row.names=F) # includes taxa in addition to squirrels, rabbits, excluding the repeated AMS samples.
 
-# isotope stats carnivores
-range(mergedDat[c(which(mergedDat$Taxon=="Canis"), which(mergedDat$Taxon=="Mustela")),'del15N_permil'])
-range(mergedDat[c(which(mergedDat$Taxon=="Canis"), which(mergedDat$Taxon=="Mustela")),'del13C_permil'])
-####
-
-# create final datasets for analyses
 trimmedDat <- mergedDat[-which(is.na(mergedDat$del15N_permil)),] # remove samples without isotopes
-trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_BP)),] # remove samples without dates 
-
-# write this dataset to save for use in Fig 5.
-write.csv(trimmedDat, file="data/processed/final_dataset_alltaxa.csv", row.names=F) # includes taxa in addition to squirrels, rabbits
+write.csv(trimmedDat, file="data/processed/final_dataset_alltaxa_finalAMSruns_with_isotopes.csv", row.names=F) 
+trimmedDat <- trimmedDat[which(trimmedDat$Taxon == 'Sylvilagus' | trimmedDat$Taxon == "Otospermophilus"),] # remove non-squirrels or sylvilagus
+write.csv(trimmedDat, file="data/processed/final_dataset_focaltaxa_finalAMSruns_with_isotopes_with_all_dates.csv", row.names=F) # includes taxa in addition to squirrels, rabbits
 
 # further trim down dataset for primary analyses
+trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_BP)),] # remove samples without dates 
 trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_error)),] # remove samples with too old of dates
-trimmedDat <- trimmedDat[which(trimmedDat$Taxon == 'Sylvilagus' | trimmedDat$Taxon == "Otospermophilus"),] # remove non-squirrels or sylvilagus
 
-# final set of statistics
-# currently within section 'Samples, dates, and stable isotope values' - 1st section of results
-nrow(trimmedDat[which(trimmedDat$Taxon == 'Sylvilagus'),]) # 42
-nrow(trimmedDat[which(trimmedDat$Taxon == 'Otospermophilus'),]) # 27
+write.csv(trimmedDat, file="data/processed/final_dataset_focaltaxa_dates_isotopes.csv", row.names = F) #just the final set of squirrels and rabbits
 
 ## Section 2: Match calibrated ages to samples ----
 
 ### create sample names for matching isotope file to ages file ----
 samples <- paste("UCIAMS", trimmedDat$UCIAMS_Number) # this is the final set of samples with both dates and isotope data
-
 
 ### read in calibrated ages ----
 allAges<- read.csv('data/OxCal/final oxcal models/AllAges_ages_probs.csv', header=T) # this file stores the raw probabilities for each age across the distribution
@@ -174,7 +163,6 @@ sampsToDelete <- unique(allAges$name)[which(is.na(match(unique(allAges$name), sa
 for (i in 1:length(sampsToDelete)){
   allAges<- allAges[-which(allAges$name==sampsToDelete[i]),]
 }
-
 
 ## Section 3: Match d180 to all age estimates ----
 # (both median_age as well as the full distribution of ages) for every sample 
@@ -294,7 +282,7 @@ matchedDF_all$time_group <- time_group
 # d18O_ngrip #primary d18O estimate at median age - hendy
 # time_group # pleistocene or holocene
 
-write.csv(matchedDF_all, file="data/processed/final_dataset_focaltaxa.csv", row.names = F) #just the final set of squirrels and rabbits
+write.csv(matchedDF_all, file="data/processed/final_dataset_focaltaxa_with_calages_climate.csv", row.names = F) #just the final set of squirrels and rabbits
 
 
 
