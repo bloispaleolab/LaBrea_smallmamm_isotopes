@@ -123,24 +123,33 @@ Taxon[which(Species=="Sylvilagus sp")] <- 'Sylvilagus'
 mergedDat$Species <- Species
 mergedDat$Taxon <- Taxon
 
-# save the most expanded dataset
-write.csv(mergedDat, file="data/processed/final_dataset_alldata.csv", row.names=F) # includes taxa in addition to squirrels, rabbits, as well as the repeated AMS samples.
+# filter and write various datasets ----
 
+# save the most expanded dataset
+# includes taxa in addition to squirrels, rabbits, as well as the repeated AMS samples.
+write.csv(mergedDat, file="data/processed/final_dataset_alldata.csv", row.names=F) 
 
 # filter and save final datasets for different analyses
+# remove the repeated AMS samples
 mergedDat <- mergedDat[which(mergedDat$repeated == "N"),]
-write.csv(mergedDat, file="data/processed/final_dataset_alltaxa_finalAMSruns.csv", row.names=F) # includes taxa in addition to squirrels, rabbits, excluding the repeated AMS samples.
+write.csv(mergedDat, file="data/processed/final_dataset_alltaxa_finalAMSruns.csv", row.names=F) 
 
-trimmedDat <- mergedDat[-which(is.na(mergedDat$del15N_permil)),] # remove samples without isotopes
+# remove samples without isotopes
+trimmedDat <- mergedDat[-which(is.na(mergedDat$del15N_permil)),] 
 write.csv(trimmedDat, file="data/processed/final_dataset_alltaxa_finalAMSruns_with_isotopes.csv", row.names=F) 
-trimmedDat <- trimmedDat[which(trimmedDat$Taxon == 'Sylvilagus' | trimmedDat$Taxon == "Otospermophilus"),] # remove non-squirrels or sylvilagus
-write.csv(trimmedDat, file="data/processed/final_dataset_focaltaxa_finalAMSruns_with_isotopes_with_all_dates.csv", row.names=F) # includes taxa in addition to squirrels, rabbits
+
+# remove non-squirrels or sylvilagus
+trimmedDat <- trimmedDat[which(trimmedDat$Taxon == 'Sylvilagus' | trimmedDat$Taxon == "Otospermophilus"),] 
+write.csv(trimmedDat, file="data/processed/final_dataset_focaltaxa_finalAMSruns_with_isotopes_with_all_dates.csv", row.names=F) 
 
 # further trim down dataset for primary analyses
-trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_BP)),] # remove samples without dates 
-trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_error)),] # remove samples with too old of dates
+# remove samples without dates 
+trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_BP)),] 
+# remove samples with too old of dates
+trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_error)),] 
 
-write.csv(trimmedDat, file="data/processed/final_dataset_focaltaxa_dates_isotopes.csv", row.names = F) #just the final set of squirrels and rabbits
+#this is the final set of squirrels and rabbits
+write.csv(trimmedDat, file="data/processed/final_dataset_focaltaxa_dates_isotopes.csv", row.names = F) 
 
 ## Section 2: Match calibrated ages to samples ----
 
