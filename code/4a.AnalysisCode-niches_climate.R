@@ -158,8 +158,12 @@ n.t.clim.hendy <- n.t.clim
 rm("c.t.clim", "carbon.lm.all.additive", "carbon.lm.all.age", "carbon.lm.all.interaction", "carbon.lm.clim", "carbon.lm.final", "carbon.lm.taxon",
    "n.t.clim", "nitrogen.lm.all.additive", "nitrogen.lm.all.age", "nitrogen.lm.all.interaction", "nitrogen.lm.clim", "nitrogen.lm.final", "nitrogen.lm.taxon")
 
-# sensitivity analyses ----
-## next with ngrip climate data ----
+# Sensitivity analysis - Climate ----
+
+## ngrip climate data ----
+# Note that the ngrip data are negatively correlated with hendy data, so I have converted them to negative values so that the relationships sync up with the hendy dataset.
+matchedDF_all$d18O_ngrip <- -matchedDF_all$d18O_ngrip
+
 ### models - Carbon ----
 
 # Start simple and build complexity
@@ -169,6 +173,7 @@ carbon.lm.clim<-lm(del13C_permil~d18O_ngrip, matchedDF_all)
 summary(carbon.lm.clim)
 plot(del13C_permil ~ d18O_ngrip, data=matchedDF_all, pch=16)
 abline(carbon.lm.clim)
+
 
 # taxon-only model
 carbon.lm.taxon<-lm(del13C_permil~Taxon, data=matchedDF_all)
@@ -220,6 +225,7 @@ summary(nitrogen.lm.all.interaction)
 nitrogen.lm.final <- step(lm(del15N_permil~d18O_ngrip*Taxon, data=matchedDF_all), direction="both")
 summary(nitrogen.lm.final)
 # --> the best final model is the additive model, which is the same as carbon.
+# --> Not a very strong movel overall - adj R2 is low, no vars sign.
 
 # t-test of residuals from climate-only model
 # residuals of Otospermophilus and Sylvilagus are NOT signif different
@@ -230,11 +236,11 @@ n.t.clim
 # Does this answer the question: "does isotope vary through time?"
 carbon.lm.all.age<-step(lm(del13C_permil~d18O_ngrip * Taxon * median_age, data=matchedDF_all), direction="both")
 summary(carbon.lm.all.age)
-# explain a bit more variation with age included: 0.4902 vs 0.4063
+# explain a bit more variation with age included: 0.4554 vs 0.3714
 
 nitrogen.lm.all.age<-step(lm(del15N_permil ~ d18O_ngrip * Taxon * median_age, data=matchedDF_all), direction="both")
 summary(nitrogen.lm.all.age)
-# explain a bit more variation with age included: 0.148 vs 0.08543
+# explain a bit more variation with age included: 0.08062 vs 0.05773
 
 final.model.stats[3,] <- c("carbon", "ngrip", "carbon.lm.all.additive", 
                            Regressionp(carbon.lm.all.additive), summary(carbon.lm.all.additive)$adj)
@@ -244,6 +250,7 @@ final.model.stats[4,] <- c("nitrogen", "ngrip", "nitrogen.lm.all.additive",
 # rename final models 
 carbon.lm.final.ngrip <- carbon.lm.final
 carbon.lm.clim.ngrip <- carbon.lm.clim
+carbon.lm.all.age.ngrip <- carbon.lm.all.age
 c.t.clim.ngrip <- c.t.clim
 nitrogen.lm.final.ngrip <- nitrogen.lm.final
 nitrogen.lm.clim.ngrip <- nitrogen.lm.clim
@@ -261,7 +268,7 @@ summary(carbon.lm.final.hendy)
 # for carbon, the hendy data better explains variation in carbon isotope values. this is seen for the full model, as well as the greater partial variation explained by d18O. In the ngrip models, the strength of Taxon relative to d18O increases in explaining variation in carbon isotopes.
 summary(nitrogen.lm.final.ngrip)
 summary(nitrogen.lm.final.hendy)
-# for nitrogen, ngrip and hendy dat produce virtually identical and very weak models, both overall as well as in terms of the partial effect of d18O on carbon isotope variation.
+# for nitrogen, ngrip and hendy data produce virtually identical and very weak models, both overall as well as in terms of the partial effect of d18O on carbon isotope variation.
 
 # Based on this, move forward with Hendy dataset
 
@@ -386,7 +393,7 @@ dev.off()
 
 
 
-# Sensitivity analysis  ----
+# Sensitivity analysis - age sensitivity ----
 # sensitivity analysis #1: compare weighted and median age models, using the final models from the primary analysis
 
 C_model_weighted <- lm(del13C_permil ~ specimen_wd18O + Taxon, data=matchedDF_all)
