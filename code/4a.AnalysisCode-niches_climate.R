@@ -262,13 +262,17 @@ rm("c.t.clim", "carbon.lm.all.additive", "carbon.lm.all.age", "carbon.lm.all.int
 
 
 ## Summarize results ----
-print(final.model.stats)
+print(final.model.stats[c(1,3,2,4),])
 summary(carbon.lm.final.ngrip)
 summary(carbon.lm.final.hendy)
 # for carbon, the hendy data better explains variation in carbon isotope values. this is seen for the full model, as well as the greater partial variation explained by d18O. In the ngrip models, the strength of Taxon relative to d18O increases in explaining variation in carbon isotopes.
 summary(nitrogen.lm.final.ngrip)
 summary(nitrogen.lm.final.hendy)
 # for nitrogen, ngrip and hendy data produce virtually identical and very weak models, both overall as well as in terms of the partial effect of d18O on carbon isotope variation.
+temp.table <- final.model.stats[c(1,3,2,4), -3]
+temp.table[,3] <- round(as.numeric(temp.table[,3]), 4)
+temp.table[,4] <- round(as.numeric(temp.table[,4]), 4)
+write.csv(temp.table, file="output/SupplementaryTable2.csv", row.names=F)
 
 # Based on this, move forward with Hendy dataset
 
@@ -277,9 +281,9 @@ summary(nitrogen.lm.final.hendy)
 ### Figure 3 ----
 
 #grDevices::pdf("output/Figure3_lm_carbon_nitrogen_all_July2021_NF.pdf", width=8, height=8)
-grDevices::cairo_pdf("output/isotope paper final/Figure3_lm_carbon_nitrogen_all_Jan2022_JB.pdf", width=8, height=8)
+grDevices::cairo_pdf("output/Figure3_lm_carbon_nitrogen_all.pdf", width=8, height=8)
 
-layout(matrix(seq(1:6), ncol=3, nrow=2, byrow=F), widths=c(2.5,2.5,1))
+layout(matrix(seq(1:6), ncol=2, nrow=3, byrow=F), heights=c(2.5,2.5,1))
 par(mar=c(4,4,1,1), cex.axis=1, bty="l")
 
 
@@ -293,7 +297,7 @@ points(del13C_permil~d18O_hendy,
        pch=16, col="royalblue2")
 abline(carbon.lm.final.hendy, lty=2)
 abline(carbon.lm.clim.hendy, lty=1)
-mtext(expression({delta}^18*O~'value ('~'\u2030'~', PDB)'), side=1, line=2.25, cex=0.75) 
+mtext(expression({delta}^18*O~'value ('~'\u2030'~', PDB)'), side=1, line=2.5, cex=0.75) 
 mtext(expression({delta}^13*C~'value ('~'\u2030'~', VPDB)'), side=2, line=2.25, cex=0.75)
 
 boxplot(carbon.lm.clim.hendy$residuals ~ matchedDF_all$Taxon[which(!is.na(matchedDF_all$d18O_hendy))], 
@@ -303,6 +307,17 @@ mtext("Taxon", side=1, line=2.25)
 mtext(expression('Residuals (Carbon Climate-only Model)'), side=2, line=2.25, cex=0.8)
 # mtext(expression('Residuals ('~{delta}^13*C~'\u2030'~' ~ '~{delta}^18*O~'\u2030'~')'), side=2, line=2.25, cex=0.8)
 legend("topright", legend=paste0("t=", round(c.t.clim.hendy$statistic,2), "; df=", round(c.t.clim.hendy$parameter,2), "; p=", round(c.t.clim.hendy$p.value,2)), bty = "n", cex = 0.8)
+
+# taxon legend
+# Draw an empty plot
+plot(5, 5,
+     type="n", axes=FALSE, ann=FALSE,
+     xlim=c(0, 10), ylim = c(0,10))
+legend("left", xpd=T, ncol=2, 
+       legend = c("Otospermophilus", "Sylvilagus"),
+       title="Taxon", title.adj=0, cex = 1.25,
+       col = c("royalblue2","darkorange"), pch = 16,
+       bty = "n")
 
 # nitrogen
 plot(del15N_permil~d18O_hendy, data=matchedDF_all, pch=16, 
@@ -315,7 +330,7 @@ points(del15N_permil~d18O_hendy,
        pch=16, col="royalblue2")
 abline(nitrogen.lm.final.hendy, lty=2)
 abline(nitrogen.lm.clim.hendy, lty=1)
-mtext(expression({delta}^18*O~'value ('~'\u2030'~', PDB)'), side=1, line=2.25, cex=0.75)
+mtext(expression({delta}^18*O~'value ('~'\u2030'~', PDB)'), side=1, line=2.5, cex=0.75)
 mtext(expression({delta}^15*N~'value ('~'\u2030'~', AIR)'), side=2, line=2.25, cex=0.75)
 
 boxplot(nitrogen.lm.clim.hendy$residuals ~ matchedDF_all$Taxon[which(!is.na(matchedDF_all$d18O_hendy))],
@@ -326,26 +341,16 @@ mtext(expression('Residuals (Nitrogen Climate-only Model)'), side=2, line=2.25, 
 # mtext(expression('Residuals ('~{delta}^15*N~'\u2030'~' ~ '~{delta}^18*O~'\u2030'~')'), side=2, line=2.25, cex=0.8)
 legend("topright", legend=paste0("t=", round(n.t.clim.hendy$statistic,2), "; df=", round(n.t.clim.hendy$parameter,2), "; p=", round(n.t.clim.hendy$p.value,2)), bty = "n", cex = 0.8)
 
-# taxon legend
-# Draw an empty plot
-plot(5, 5, 
-     type="n", axes=FALSE, ann=FALSE, 
-     xlim=c(0, 10), ylim = c(0,10))
-legend(xpd=T, x=-5, y=5, 
-       legend = c("Otospermophilus", "Sylvilagus"),
-       title="Taxon",
-       col = c("royalblue2","darkorange"), pch = 16,
-       bty = "n", cex = 0.8)
 
 # model legend
 plot(5, 5, 
      type="n", axes=FALSE, ann=FALSE, 
      xlim=c(0, 10), ylim = c(0,10))
-legend(xpd=T, x=-5, y=5,
+legend("left", xpd=T,
        legend = c("Climate+Taxon", "Climate-only"),
-       title="Model",
-       lty = c(2,1),
-       bty = "n", cex = 0.8)
+       title="Model", title.adj=0, 
+       lty = c(2,1), cex=1.25, ncol=2,
+       bty = "n")
 
 dev.off()
 
@@ -392,163 +397,6 @@ points(d18O_hendy~median_age, data=matchedDF_all[which(matchedDF_all$Taxon=="Oto
 dev.off()
 
 
-
-# Sensitivity analysis - age sensitivity ----
-# sensitivity analysis #1: compare weighted and median age models, using the final models from the primary analysis
-
-C_model_weighted <- lm(del13C_permil ~ specimen_wd18O + Taxon, data=matchedDF_all)
-summary(C_model_weighted)
-C_model_median <- lm(del13C_permil ~ d18O_hendy + Taxon, data=matchedDF_all)
-summary(C_model_median) # this is the final model from the primary analyses
-
-N_model_weighted <- lm(del15N_permil ~ specimen_wd18O + Taxon, data=matchedDF_all)
-summary(N_model_weighted)
-N_model_median <- lm(del15N_permil ~ d18O_hendy + Taxon, data=matchedDF_all)
-summary(N_model_median) # this is the final model from the primary analyses
-
-# compare weighted d180 vs d18O at median age
-# No substantial difference. N still almost signif, C still highly signif. 
-# Median is more significant than weighted, for what that's worth. Maybe only matters when we go to match isotopes with a specific age? weighted age and median age can be quite different
-
-
-# How much of a difference does the variation in age make?
-N=100 # Note: some specimens do not have 100 age estimates.
-N_model_res <- as.data.frame(matrix(data=NA, nrow=N, ncol=6))
-C_model_res<- as.data.frame(matrix(data=NA, nrow=N, ncol=6))
-colnames(N_model_res) <- colnames(C_model_res) <- c('Fstat', 'lm_pVal', 'coeff', 'AdjR2', 'cor', 'cor_pVal')
-
-for (k in 1:N){
-  
-  # for each specimen, sample a d18O value
-  sampledd18O <- vector(mode="numeric", length=length(samples_final))
-  
-  for (i in 1:length(samples_final)){
-    # pull out specimen ID
-    spec <- samples_final[i] 
-    # pull out all calibrated ages and probabilities
-    specd18O <- allAges_d18O[which(allAges_d18O$name == spec),]
-    # sample a single age, with sampling weighted per the probability
-    sampledd18O[i] <- sample(specd18O$d18O, 1, prob=specd18O$probability)
-  }
-  
-  # match with isotope data
-  matchedDF_sensitivity <- cbind(isoDat2_final[,c('UCIAMS_Number', 'Taxon', 'del15N_permil', 'del13C_permil', 'X14C_age_BP')], sampledd18O)
-  
-  N_model_sensitivity <- lm(del15N_permil ~ sampledd18O, data=matchedDF_sensitivity)
-  C_model_sensitivity <- lm(del13C_permil ~ sampledd18O, data=matchedDF_sensitivity)
-  
-  par(mfrow=c(1,2))
-  plot(del15N_permil ~ sampledd18O, data=matchedDF_sensitivity, pch=16)
-  abline(N_model_sensitivity)
-  plot(del13C_permil ~ sampledd18O, data=matchedDF_sensitivity, pch=16)
-  abline(C_model_sensitivity)
-  
-  N_cor.test_sensitivity <- cor.test(matchedDF_sensitivity$del15N_permil, matchedDF_sensitivity$sampledd18O)
-  C_cor.test_sensitivity <- cor.test(matchedDF_sensitivity$del13C_permil, matchedDF_sensitivity$sampledd18O)
-  
-  N_model_res[k, 1]<- summary(N_model_sensitivity)$fstatistic[1]
-  N_model_res[k, 2]<- summary(N_model_sensitivity)$coefficients[8]
-  N_model_res[k, 3]<- summary(N_model_sensitivity)$coefficients[2]
-  N_model_res[k, 4]<- summary(N_model_sensitivity)$adj.r.squared
-  N_model_res[k, 5]<- N_cor.test_sensitivity$estimate
-  N_model_res[k, 6]<- N_cor.test_sensitivity$p.value
-  
-  C_model_res[k, 1]<- summary(C_model_sensitivity)$fstatistic[1]
-  C_model_res[k, 2]<- summary(C_model_sensitivity)$coefficients[8]
-  C_model_res[k, 3]<- summary(C_model_sensitivity)$coefficients[2]
-  C_model_res[k, 4]<- summary(C_model_sensitivity)$adj.r.squared
-  C_model_res[k, 5]<- C_cor.test_sensitivity$estimate
-  C_model_res[k, 6]<- C_cor.test_sensitivity$p.value
-  
-}
-
-#Jessica - Can we run many iterations on the model above (e.g., 1000)
-#and use the min of mins and max of maxes below to better quantify 
-#the sensitivity of these estimates and the full range of R2 values?
-# sure: that's what the script above does (though only for N=100), then the apply function below shows a variety of summary stats
-
-# Calculate summary statistics on each column
-apply(N_model_res, 2, summary)
-apply(C_model_res, 2, summary)
-
-# Supplemental figure for appendix - sensitivity analysis ----
-## Compare final estimate with sensitivity analysis ----
-
-# new supplemental figure, showing the test results for both Adj. R2 and the fitted coefficient for d18O.
-# Note the following models to use:
-# Carbon median ages univariate climate: carbon.lm.clim
-# Nitrogen median ages univariate climate: nitrogen.lm.clim
-
-# Carbon weighted age univariate climate
-carbon.lm.clim.weighted <- lm(del13C_permil ~ specimen_wd18O, data=matchedDF_all)
-# Nitrogen weighted age univariate climate
-nitrogen.lm.clim.weighted <- lm(del15N_permil ~ specimen_wd18O, data=matchedDF_all)
-
-# grDevices::pdf("output/SuppFigureX_climate_sensitivity_July2021_NF.pdf", width=8, height=6)
-#Jessica - use line below instead of above
-grDevices::cairo_pdf("output/SuppFigureX_climate_sensitivity_R2andcoeff.pdf", width=8, height=6)
-
-par(mfrow=c(2,2)) 
-
-# plot Carbon R2
-y1<- hist(C_model_res$AdjR2, xlab=expression('Adjusted R'^2), main=expression('Model:'~{delta}^13*C~'\u2030'~'~'~{delta}^18*O~'\u2030'))
-segments(summary(carbon.lm.clim.weighted)$adj.r.squared, 0, 
-         summary(carbon.lm.clim.weighted)$adj.r.squared, max(y1$counts), 
-         col="red", lwd=1)
-segments(summary(carbon.lm.clim)$adj.r.squared, 0, 
-         summary(carbon.lm.clim)$adj.r.squared, max(y1$counts), 
-         col="blue", lwd=2)
-legend(xpd=T, x=0.25, y=35, bty="n", legend=c("median d18O", "weighted d18O"), 
-       col=c("blue", "red"), lwd=c(2,1), cex=0.5)
-
-# plot Carbon d18O fitted coefficient
-y2 <- hist(C_model_res$coeff, xlab=expression({delta}^18*O~'fitted coefficient'), main="")
-segments(summary(carbon.lm.clim.weighted)$coefficients[2], 0, 
-         summary(carbon.lm.clim.weighted)$coefficients[2], max(y2$counts), 
-         col="red", lwd=1)
-segments(summary(carbon.lm.clim)$coefficients[2], 0, 
-         summary(carbon.lm.clim)$coefficients[2], max(y2$counts), 
-         col="blue", lwd=2)
-
-
-# plot Nitrogen R2
-x1<- hist(N_model_res$AdjR2, xlab=expression('Adjusted R'^2), main=expression('Model:'~{delta}^15*N~'\u2030'~'~'~{delta}^18*O~'\u2030'))
-segments(summary(nitrogen.lm.clim.weighted)$adj.r.squared, 0, 
-         summary(nitrogen.lm.clim.weighted)$adj.r.squared, max(x1$counts), 
-         col="red", lwd=1)
-segments(summary(nitrogen.lm.clim)$adj.r.squared, 0, 
-         summary(nitrogen.lm.clim)$adj.r.squared, max(x1$counts), 
-         col="blue", lwd=2)
-
-# plot Nitrogen d18O fitted coefficient
-x2 <- hist(N_model_res$coeff, xlab=expression({delta}^18*O~'fitted coefficient'), main="")
-segments(summary(nitrogen.lm.clim.weighted)$coefficients[2], 0, 
-         summary(nitrogen.lm.clim.weighted)$coefficients[2], max(x2$counts), 
-         col="red", lwd=1)
-segments(summary(nitrogen.lm.clim)$coefficients[2], 0, 
-         summary(nitrogen.lm.clim)$coefficients[2], max(x2$counts), 
-         col="blue", lwd=2)
-dev.off()
-
-# old supplemental figure, showing the correlation test results
-grDevices::pdf("output/SuppFigureX_climate_sensitivity_July2021_NF.pdf", width=8, height=6)
-#Jessica - use commented out line below instead of above
-#grDevices::cairo_pdf("output/SuppFigureX_climate_sensitivity_July2021_JB.pdf", width=8, height=6)
-par(mfrow=c(1,2)) 
-x<- hist(N_model_res$cor, xlab=expression('Correlation:'~{delta}^15*N~'\u2030'~'~'~{delta}^18*O~'\u2030'), main="")
-segments(N_cor.test_weighted$estimate, 0, N_cor.test_weighted$estimate, max(x$counts), 
-         col="red", lwd=2)
-segments(N_cor.test_median$estimate, 0, N_cor.test_median$estimate, max(x$counts), 
-         col="blue", lwd=2)
-legend(xpd=T, x=0.25, y=35, bty="n", legend=c("median d18O", "weighted d18O"), 
-       col=c("blue", "red"), lwd=c(2,1), cex=0.5)
-
-y<- hist(C_model_res$cor, xlab=expression('Correlation:'~{delta}^13*C~'\u2030'~'~'~{delta}^18*O~'\u2030'), main="")
-segments(C_cor.test_weighted$estimate, 0, C_cor.test_weighted$estimate, max(y$counts), 
-         col="red", lwd=1)
-segments(C_cor.test_median$estimate, 0, C_cor.test_median$estimate, max(y$counts), 
-         col="blue", lwd=2)
-dev.off()
 
 
 # Final additional plot - age of Squirrels vs rabbits ----
