@@ -1,8 +1,11 @@
 ## Final plots ####
 
+# Figure 1 plot - in script 4b
+# Fiure 2 plot
+
 # Read in data ----
 matchedDF_all <- read.csv(file="data/processed/final_dataset_focaltaxa_with_calages_climate.csv", header=T) # 
-
+load(file="output/hendy_models_for_plotting.RData") # saved models
 
 ### Figure 3 ----
 
@@ -11,7 +14,6 @@ grDevices::cairo_pdf("output/Figure3_lm_carbon_nitrogen_all.pdf", width=8, heigh
 
 layout(matrix(seq(1:6), ncol=2, nrow=3, byrow=F), heights=c(2.5,2.5,1))
 par(mar=c(4,4,1,1), cex.axis=1, bty="l")
-
 
 # carbon
 plot(del13C_permil~d18O_hendy, data=matchedDF_all, pch=16, type="n", xlab="", ylab="")

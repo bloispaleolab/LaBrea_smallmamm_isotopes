@@ -152,7 +152,14 @@ carbon.lm.all.age.hendy <- carbon.lm.all.age
 c.t.clim.hendy <- c.t.clim
 nitrogen.lm.final.hendy <- nitrogen.lm.final
 nitrogen.lm.clim.hendy <- nitrogen.lm.clim
+nitrogen.lm.all.age.hendy <- mitrogen.lm.all.age
 n.t.clim.hendy <- n.t.clim
+
+# Save model objects for use in plotting
+save(carbon.lm.final.hendy, carbon.lm.clim.hendy, carbon.lm.all.age.hendy, c.t.clim.hendy, 
+     nitrogen.lm.final.hendy, nitrogen.lm.clim.hendy, nitrogen.lm.all.age.hendy, n.t.clim.hendy, 
+     file="output/hendy_models_for_plotting.RData")
+
 
 # remove variables that are being generated anew in ngrip section
 rm("c.t.clim", "carbon.lm.all.additive", "carbon.lm.all.age", "carbon.lm.all.interaction", "carbon.lm.clim", "carbon.lm.final", "carbon.lm.taxon",
@@ -173,7 +180,6 @@ carbon.lm.clim<-lm(del13C_permil~d18O_ngrip, matchedDF_all)
 summary(carbon.lm.clim)
 plot(del13C_permil ~ d18O_ngrip, data=matchedDF_all, pch=16)
 abline(carbon.lm.clim)
-
 
 # taxon-only model
 carbon.lm.taxon<-lm(del13C_permil~Taxon, data=matchedDF_all)
@@ -254,7 +260,13 @@ carbon.lm.all.age.ngrip <- carbon.lm.all.age
 c.t.clim.ngrip <- c.t.clim
 nitrogen.lm.final.ngrip <- nitrogen.lm.final
 nitrogen.lm.clim.ngrip <- nitrogen.lm.clim
+nitrogen.lm.all.age.ngrip <- nitrogen.lm.all.age
 n.t.clim.ngrip <- n.t.clim
+
+# Save model objects for use in plotting
+save(carbon.lm.final.ngrip, carbon.lm.clim.ngrip, carbon.lm.all.age.ngrip, c.t.clim.ngrip, 
+     nitrogen.lm.final.ngrip, nitrogen.lm.clim.ngrip, nitrogen.lm.all.age.ngrip, n.t.clim.ngrip, 
+     file="output/ngrip_models_for_plotting.RData")
 
 # remove variables 
 rm("c.t.clim", "carbon.lm.all.additive", "carbon.lm.all.age", "carbon.lm.all.interaction", "carbon.lm.clim", "carbon.lm.final", "carbon.lm.taxon",
@@ -276,10 +288,6 @@ write.csv(temp.table, file="output/SupplementaryTable2.csv", row.names=F)
 
 # Based on this, move forward with Hendy dataset
 
-# Save model objects for use in plotting
-carbon.lm.final.hendy
-carbon.lm.clim.hendy
-c.t.clim.hendy
 
 
 
