@@ -240,7 +240,7 @@ summary(cnt.manova.p.interact)
 #SIBER Stats ----
 
 ## Create data frames for SIBER analysis
-# First create a df with both groups (Sylv and Oto) and communities (Holo vs Pleisto). 
+# First create a df with groups (Sylv and Oto) and communities (Holo vs Pleisto) separated. 
 siber.data.all <- dat %>% 
   rename(iso1 = del13C_permil,
         iso2 = del15N_permil,
@@ -314,6 +314,9 @@ plotSiberObject(siber.data.p.obj,
 group.ML.siber.data.p.obj <- groupMetricsML(siber.data.p.obj)
 print(group.ML.siber.data.p.obj)
 
+# create summary table of group statistics
+save(group.ML.siber.data.p.obj, group.ML.siber.data.q.obj, group.ML.siber.obj, file="output/siber.summary.stats.RData")
+
 
 ## JESSICA -finished code through here.
 
@@ -334,14 +337,14 @@ priors$tau.mu <- 1.0E-2
 # fit the ellipses which uses an Inverse Wishart prior
 # on the covariance matrix Sigma, and a vague normal prior on the 
 # means. Fitting is via the JAGS method.
-ellipses.posterior <- siberMVN(siber.obj, parms, priors)
+ellipses.posterior <- siberMVN(siber.data.q.obj, parms, priors)
 
 
 # The posterior estimates of the ellipses for each group can be used to
 # calculate the SEA.B for each group.
 SEA.B <- siberEllipses(ellipses.posterior)
 
-siberDensityPlot(SEA.B, xticklabels = colnames(group.ML), 
+siberDensityPlot(SEA.B, xticklabels = colnames(group.ML.siber.data.q.obj), 
                  xlab = c("Community | Group"),
                  ylab = expression("Standard Ellipse Area " ('\u2030' ^2) ),
                  bty = "L",
@@ -350,7 +353,7 @@ siberDensityPlot(SEA.B, xticklabels = colnames(group.ML),
 )
 
 # Add red x's for the ML estimated SEA-c
-points(1:ncol(SEA.B), group.ML[3,], col="red", pch = "x", lwd = 2)
+points(1:ncol(SEA.B), group.ML.siber.data.q.obj[3,], col="red", pch = "x", lwd = 2)
 
 
 # Calculate some credible intervals 
@@ -370,7 +373,7 @@ SEA.B.modes <- lapply(
   prob = cr.p, all.modes=T)
 
 # extract the posterior means
-mu.post <- extractPosteriorMeans(siber.RLB, ellipses.posterior)
+mu.post <- extractPosteriorMeans(siber.data.q.obj, ellipses.posterior)
 
 # calculate the corresponding distribution of layman metrics
 layman.B <- bayesianLayman(mu.post)
@@ -383,8 +386,8 @@ siberDensityPlot(layman.B[[1]], xticklabels = colnames(layman.B[[1]]),
 
 # add the ML estimates (if you want). Extract the correct means 
 # from the appropriate array held within the overall array of means.
-comm1.layman.ml <- laymanMetrics(siber.RLB$ML.mu[[1]][1,1,],
-                                 siber.RLB$ML.mu[[1]][1,2,]
+comm1.layman.ml <- laymanMetrics(siber.data.q.obj$ML.mu[[1]][1,1,],
+                                 siber.data.q.obj$ML.mu[[1]][1,2,]
 )
 points(1:6, comm1.layman.ml$metrics, col = "red", pch = "x", lwd = 2)
 
