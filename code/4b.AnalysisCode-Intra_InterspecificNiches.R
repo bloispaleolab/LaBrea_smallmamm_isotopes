@@ -11,10 +11,62 @@ library(ggpubr)
 # Read in file
 iso_dat <- read.csv(file="data/processed/final_dataset_focaltaxa_finalAMSruns_with_isotopes_with_all_dates.csv", header=T) # All rabbits and Squirrels with isotopes - some have no dates, or dates too old to calibrate 
 
+# determine normality, Shapiro-Wilk tests ----
+
+#carbon
+CS <- iso_dat %>%
+  filter(Taxon == 'Sylvilagus') %>%
+  select(del13C_permil)
+shapiro.test(CS$del13C_permil)
+# not normal
+
+CO <- iso_dat %>%
+  filter(Taxon == 'Otospermophilus') %>%
+  select(del13C_permil)
+shapiro.test(CO$del13C_permil)
+# not normal
+
+NS <- iso_dat %>%
+  filter(Taxon == 'Sylvilagus') %>%
+  select(del15N_permil)
+shapiro.test(NS$del15N_permil)
+# normal
+
+NO <- iso_dat %>%
+  filter(Taxon == 'Otospermophilus') %>%
+  select(del15N_permil)
+shapiro.test(NO$del15N_permil)
+# normal
+
+CSa <- iso_dat %>%
+  filter(Species == 'S. audubonii') %>%
+  select(del13C_permil)
+shapiro.test(CSa$del13C_permil)
+# normal
+
+CSb <- iso_dat %>%
+  filter(Species == 'S. bachmani') %>%
+  select(del13C_permil)
+shapiro.test(CSb$del13C_permil)
+# not normal
+
+NSa <- iso_dat %>%
+  filter(Species == 'S. audubonii') %>%
+  select(del15N_permil)
+shapiro.test(NSa$del15N_permil)
+# not normal
+
+NSb <- iso_dat %>%
+  filter(Species == 'S. bachmani') %>%
+  select(del15N_permil)
+shapiro.test(NSb$del15N_permil)
+# normal
+
+
 ## Inter-specific - Compare squirrels to rabbits ----
 
 # examine data
-#carbon
+#carbon - both taxa non-normal, use wilcon.test
 wilcox.c.taxon <- wilcox.test(del13C_permil~Taxon, data=iso_dat, correct = TRUE)
 wilcox.c.taxon
 
@@ -29,7 +81,8 @@ p3 <- ggboxplot(iso_dat, x = "Taxon", y = "del13C_permil",
 genus_C <- p3 + stat_compare_means(method = "wilcox.test", label.x = 2)
 genus_C
 
-#nitrogen
+#nitrogen - could use normal t-test for this. t.test marginally not significant, just use wilcox test for consistency with other comparisons.
+t.test(del15N_permil~Taxon, data=iso_dat)
 wilcox.n.taxon <- wilcox.test(del15N_permil~Taxon, data=iso_dat, correct = TRUE)
 wilcox.n.taxon
 p4 <- ggboxplot(iso_dat, x = "Taxon", y = "del15N_permil",
@@ -45,11 +98,11 @@ genus_N
 
 ## Intra - specific diet ---- 
 
-## Compare desert cottontails to brush rabbits
+## Compare desert cottontails to brush rabbits 
 
 iso_rabbits<- iso_dat[grep("S. audubonii|S. bachmani", iso_dat$Species), c('del13C_permil', 'del15N_permil', 'Species', 'Taxon')]
 
-#carbon
+#carbon - one taxon normal, other non-normal. Use wilcox.test 
 wilcox.c.rabbits <- wilcox.test(del13C_permil~Species, data=iso_rabbits, correct = TRUE, alternative = "two.sided")
 wilcox.c.rabbits
 #t.test(del13C_permil~Taxon, mu=0, alt="two.sided", conf=0.95, var.eq=F, paired=F, data=iso_rabbits)
@@ -65,7 +118,7 @@ rabbits_C <- p1 + stat_compare_means(method = "wilcox.test", label.x = 2)
 #p-values appear on figure as a single plot, but not on multiplots
 rabbits_C
 
-#nitrogen
+#nitrogen - one taxon normal, other non-normal. Use wilcox.test
 wilcox.n.rabbits <- wilcox.test(del15N_permil~Species, data=iso_rabbits, correct = TRUE)
 wilcox.n.rabbits
 
