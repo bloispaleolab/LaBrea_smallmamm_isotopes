@@ -149,15 +149,17 @@ final.model.stats[2,] <- c("nitrogen", "hendy", "nitrogen.lm.all.additive",
 carbon.lm.final.hendy <- carbon.lm.final
 carbon.lm.clim.hendy <- carbon.lm.clim
 carbon.lm.all.age.hendy <- carbon.lm.all.age
+carbon.lm.taxon.hendy <- carbon.lm.taxon
 c.t.clim.hendy <- c.t.clim
 nitrogen.lm.final.hendy <- nitrogen.lm.final
 nitrogen.lm.clim.hendy <- nitrogen.lm.clim
-nitrogen.lm.all.age.hendy <- mitrogen.lm.all.age
+nitrogen.lm.all.age.hendy <- nitrogen.lm.all.age
+nitrogen.lm.taxon.hendy <- nitrogen.lm.taxon
 n.t.clim.hendy <- n.t.clim
 
 # Save model objects for use in plotting
-save(carbon.lm.final.hendy, carbon.lm.clim.hendy, carbon.lm.all.age.hendy, c.t.clim.hendy, 
-     nitrogen.lm.final.hendy, nitrogen.lm.clim.hendy, nitrogen.lm.all.age.hendy, n.t.clim.hendy, 
+save(carbon.lm.final.hendy, carbon.lm.clim.hendy, carbon.lm.all.age.hendy, carbon.lm.taxon.hendy, c.t.clim.hendy, 
+     nitrogen.lm.final.hendy, nitrogen.lm.clim.hendy, nitrogen.lm.all.age.hendy, nitrogen.lm.taxon.hendy, n.t.clim.hendy, 
      file="output/hendy_models_for_plotting.RData")
 
 

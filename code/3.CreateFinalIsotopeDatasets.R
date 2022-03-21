@@ -315,3 +315,32 @@ write.csv(matchedDF_all, file="data/processed/final_dataset_focaltaxa_with_calag
 # pach.d18O_mean	
 # pach.d18O_median	
 # P3_L
+
+
+# Figure 5 dataset ----
+# Read in data
+megaherbivoreDat <- read.csv(file="data/raw/rlb_data_extinct.csv", header=T)
+
+trimmedDat <- read.csv(file="data/processed/final_dataset_alltaxa_finalAMSruns_with_isotopes.csv", header=T) 
+# remove carnivores
+trimmedDat <- trimmedDat[-which(trimmedDat$Taxon == "Mustela" | trimmedDat$Taxon == "Canis"),]
+
+# change samples with > dates to numeric
+trimmedDat$X14C_age_BP[grep(">", trimmedDat$X14C_age_BP)] <- 60000
+trimmedDat$X14C_age_BP <- as.numeric(trimmedDat$X14C_age_BP)
+
+# remove samples with no dates
+trimmedDat <- trimmedDat[-which(is.na(trimmedDat$X14C_age_BP)),]
+
+trimmedDat$Group <- "Herbivore"
+trimmedDat$Time <- NA
+trimmedDat$Time[which(trimmedDat$X14C_age_BP<11000)] <- "Holocene"  #adjust age cutoff since working with uncalibrated dates
+trimmedDat$Time[which(trimmedDat$X14C_age_BP>11000)] <- "Pleistocene" 
+
+herbivoreDat <- trimmedDat %>%                               
+  select(UCIAMS_Number, Species, Taxon, Time, Group, del13C_permil, del15N_permil)
+
+colnames(megaherbivoreDat)[6:7] <- colnames(herbivoreDat)[6:7]
+
+fig5Dat <- rbind(megaherbivoreDat, herbivoreDat)
+write.csv(fig5Dat, file="data/processed/final_dataset_Figure5.csv", row.names = F) 

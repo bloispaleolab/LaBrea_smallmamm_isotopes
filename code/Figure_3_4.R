@@ -1,7 +1,9 @@
 ## Final plots ####
 
 # Figure 1 plot - in script 4b
-# Fiure 2 plot
+# Figure 2 plot - in script 4d
+# Figure 3 plot - here
+# Figure 4 plot - here
 
 # Read in data ----
 matchedDF_all <- read.csv(file="data/processed/final_dataset_focaltaxa_with_calages_climate.csv", header=T) # 
@@ -91,9 +93,11 @@ dev.off()
 
 # order matchedDF_all
 matchedDF_all <- matchedDF_all[order(matchedDF_all$median_age),]
+# read in hendy data 
+hendyDat<- read.delim("data/raw/climate/hendy2002data.txt")
 
 #grDevices::pdf(file="output/Figure4_carbon_climate_time_updated_NF.pdf", height=6, width=8)
-grDevices::cairo_pdf(file="output/isotope paper final/Figure4_carbon_climate_time_updated_Jan2022_JB.pdf", height=6, width=8)
+grDevices::cairo_pdf(file="output/Figure4_carbon_climate_time_updated_Mar2022_JB.pdf", height=6, width=8)
 
 layout(matrix(seq(1:2), ncol=1, nrow=2), heights=c(0.75,1))
 par(mar=c(4,5,0,5), cex.axis=1, bty="l", xpd=F)
@@ -122,5 +126,8 @@ lines(x1.05$fitted~x1.05$x, type="l", col="darkgray")
 
 points(d18O_hendy~median_age, data=matchedDF_all[which(matchedDF_all$Taxon=="Sylvilagus"),], pch=16, col="darkorange", cex=0.5)
 points(d18O_hendy~median_age, data=matchedDF_all[which(matchedDF_all$Taxon=="Otospermophilus"),], pch=16, col="royalblue2", cex=0.5)
+
+segments(11500, 0, 11500, 3, col="gray", lty=2)
+
 dev.off()
 

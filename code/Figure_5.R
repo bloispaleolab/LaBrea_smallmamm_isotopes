@@ -1,37 +1,38 @@
 library(tidyverse)
 library(readr)
+library(tidyverse)
+library(readr)
 
 # plot the isotope data - using ggplot2 ####
-rlb_data<- read_csv("data/processed/SIBER/rlb_data2_jlb.csv", trim_ws=TRUE)
-rlb_data$Taxon <- as.factor(rlb_data$Taxon)
-rlb_data$Time <- as.factor(rlb_data$Time)
-rlb_data$Group <- as.factor(rlb_data$Group)
+fig5Dat<- read_csv(file="data/processed/final_dataset_Figure5.csv", col_names=T, trim_ws=T)
 
-rlb_data<- rlb_data %>%
+fig5Dat$Taxon <- as.factor(fig5Dat$Taxon)
+fig5Dat$Time <- as.factor(fig5Dat$Time)
+fig5Dat$Group <- as.factor(fig5Dat$Group)
+
+fig5Dat<- fig5Dat %>%
   arrange(Group) %>%
   mutate(Taxon = fct_relevel(Taxon, 
-                             "Bison", "Camelops", "Equus", "Mammut", "Paramylodon", "Microtus", "Neotoma", "Otospermophilus", "Sylvilagus", "Thomomys"), Group = fct_relevel(Group, "Megaherbivore", "Herbivore"), Time = fct_relevel(Time, "Pleistocene", "Holocene"))
+                             "Bison", "Camelops", "Equus", "Mammut", "Paramylodon", "Neotoma", "Otospermophilus", "Sylvilagus", "Thomomys"), Group = fct_relevel(Group, "Megaherbivore", "Herbivore"), Time = fct_relevel(Time, "Holocene", "Pleistocene"))
 
 labelColors <- c("Bison" = "gray20",
                  "Camelops" = "gray30",
                  "Equus" = "gray40", 
                  "Mammut" = "gray50",
                  "Paramylodon" = "gray60",
-                 "Microtus" = "red3",
                  "Neotoma" = "forestgreen",
                  "Otospermophilus" = "royalblue2",
                  "Sylvilagus" = "darkorange",
-                 "Thomomys" = "mediumorchid4")
+                 "Thomomys" = "red3")
 
-first.plot <- ggplot(data = rlb_data, 
-                     aes(x = d13C, y = d15N)) +
+first.plot <- ggplot(data = fig5Dat, 
+                     aes(x = del13C_permil, y = del15N_permil)) +
                        geom_point(aes(colour = Taxon, 
-                                      shape = Time, 
-                                      size = Group)) +
+                                      shape = Time)) +
                        scale_size_manual(values = c(1, 2)) +
                        scale_color_manual(values=labelColors) +
-  ylab(expression(paste(delta^{15}, "N (\u2030) values"))) +
-  xlab(expression(paste(delta^{13}, "C (\u2030) values"))) + 
+  ylab(expression({delta}^15*N~'value ('~'\u2030'~', AIR)')) +
+  xlab(expression({delta}^13*C~'value ('~'\u2030'~', VPDB)')) + 
   theme_classic() +
   theme(text = element_text(size=12),
         axis.ticks.length = unit(0.15, "cm"),
@@ -39,18 +40,17 @@ first.plot <- ggplot(data = rlb_data,
         legend.key.size = unit(0.4, 'cm')) + 
   labs(colour = "Taxon") 
 
-grDevices::cairo_pdf("output/isotope paper final/Figure5_v1_noerrorbars.pdf", width=6, height=4)
   print(first.plot) 
-dev.off()
 
+    
 # error bars
-sbg <- rlb_data %>% 
+sbg <- fig5Dat %>% 
   group_by(Taxon, Time) %>% 
   summarise(count = n(),
-            mC = mean(d13C), 
-            sdC = sd(d13C), 
-            mN = mean(d15N), 
-            sdN = sd(d15N))
+            mC = mean(del13C_permil), 
+            sdC = sd(del13C_permil), 
+            mN = mean(del15N_permil), 
+            sdN = sd(del15N_permil))
 
 second.plot <- first.plot+
   geom_errorbar(data = sbg, 
@@ -70,6 +70,6 @@ second.plot <- first.plot+
              alpha = 0.5, show.legend = FALSE) +
   scale_fill_manual(values=labelColors)
 
-grDevices::cairo_pdf("output/isotope paper final/Figure5_v2_witherrorbars.pdf", width=6, height=4)
+grDevices::cairo_pdf("output/Figure5_v2_witherrorbars.pdf", width=6, height=4)
   print(second.plot) 
 dev.off()
