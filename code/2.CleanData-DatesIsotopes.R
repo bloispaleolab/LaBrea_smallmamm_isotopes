@@ -74,5 +74,5 @@ tempI[,c(2,3,16:17)] # manually check original sample name and other columns to 
 tempIsotopes <- rbind(tempIsotopes, tempI)
 
 # write dates to processed files
-write.table(tempIsotopes, file="data/processed/master_isotopes_file.txt", sep="\t")
+write.table(tempIsotopes, file="data/processed/master_isotopes_file.txt", sep="\t", row.names = F)
 
