@@ -55,28 +55,28 @@ for (j in 1:length(leftovers)){
 }
 
 # which UCIAMS to use?
-# LACMP23-33228: 198302 #alt 198206 use 198206 because the C:N ratio is  higher
+# LACMP23-33228: 198302 #alt 198206 use 198302 because the C:N ratio is closer to 3.3
 
-# LACMHC-142773: 216768 #alt 217076 use 217076 because the C:N ratio is slightly higher (3.0, vs 2.9 for 216768)
+# LACMHC-142773: 216768 #alt 217076 use 216768 because the C:N ratio is closer to 3.3
 
-# LACMHC-142779: 216770 #alt 217077 use 217077 because the C:N ratio is slightly higher (3.0, vs 2.9 for 216770)
+# LACMHC-142779: 216770 #alt 217077 use 216770 because the C:N ratio is closer to 3.3
 
-# LACMP23-35541: 223585 #alt 223495  ## use 223495
-# note: 223495 used in SIBERraw.csv, 223585 used in Iso.Clim.R script. Sample 223495 has a higher C:N (2.9) vs 2.8 for 223585. We will use sample with higher C:N (223495).
+# LACMP23-35541: 223585 #alt 223495  ## use 223585
+# note: 223495 used in SIBERraw.csv, 223585 used in Iso.Clim.R script. We will use sample with C:N closer to 3.3 (223585).
 
 # LACMP23-40642: 223587 #alt 223521  ## use 223587
 # note: 223521 used in SIBERraw.csv, 223587 used in Iso.Clim.R script. The two samples have same C:N, isotope values, slightly different dates (26940 +- 320 vs 26710 +- 110). We will use sample with more precise age range (223587). 
 
-leftoverDF$correctUCIAMS<- c(198206, 217076, 217077, 223495, 223587)
-leftoverDF$repeatedUCIAMS <- c(198302, 216768, 216770, 223585, 223521)
+leftoverDF$correctUCIAMS<- c(198302, 216768, 216770, 223585, 223587)
+leftoverDF$repeatedUCIAMS <- c(198206, 217076, 217077, 223495, 223521)
 
 ## CHECK!
 leftoverDF[,c(1,4)]
 # Should have in correctUCIAMS:
-# 1 LACMP23-33228        198206
-# 2 LACMHC-142773        217076
-# 3 LACMHC-142779        217077
-# 4 LACMP23-35541        223495
+# 1 LACMP23-33228        198302
+# 2 LACMHC-142773        216768
+# 3 LACMHC-142779        216770
+# 4 LACMP23-35541        223585
 # 5 LACMP23-40642        223587
   
 ### merge repeated samples ----
