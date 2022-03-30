@@ -134,11 +134,11 @@ n.t.clim
 # Does this answer the question: "does isotope vary through time?"
 carbon.lm.all.age<-step(lm(del13C_permil~d18O_hendy * Taxon * median_age, data=matchedDF_all), direction="both")
 summary(carbon.lm.all.age)
-# explain a bit more variation with age included: 0.4877 vs 0.428
+# explain a bit more variation with age included: 0.4549 vs 0.4105
 
 nitrogen.lm.all.age<-step(lm(del15N_permil ~ d18O_hendy * Taxon * median_age, data=matchedDF_all), direction="both")
 summary(nitrogen.lm.all.age)
-# explain a bit more variation with age included: 0.1702 vs 0.08476
+# This is the same with or without age included: 0.05652 vs 0.05652
 
 final.model.stats[1,] <- c("carbon", "hendy", "carbon.lm.all.additive", 
                            Regressionp(carbon.lm.all.additive), summary(carbon.lm.all.additive)$adj)
@@ -233,7 +233,7 @@ summary(nitrogen.lm.all.interaction)
 nitrogen.lm.final <- step(lm(del15N_permil~d18O_ngrip*Taxon, data=matchedDF_all), direction="both")
 summary(nitrogen.lm.final)
 # --> the best final model is the additive model, which is the same as carbon.
-# --> Not a very strong movel overall - adj R2 is low, no vars sign.
+# --> Not a very strong model overall - adj R2 is low, no vars sign.
 
 # t-test of residuals from climate-only model
 # residuals of Otospermophilus and Sylvilagus are NOT signif different
@@ -244,11 +244,11 @@ n.t.clim
 # Does this answer the question: "does isotope vary through time?"
 carbon.lm.all.age<-step(lm(del13C_permil~d18O_ngrip * Taxon * median_age, data=matchedDF_all), direction="both")
 summary(carbon.lm.all.age)
-# explain a bit more variation with age included: 0.4554 vs 0.3714
+# explain a bit more variation with age included: 0.4565 vs 0.3857
 
 nitrogen.lm.all.age<-step(lm(del15N_permil ~ d18O_ngrip * Taxon * median_age, data=matchedDF_all), direction="both")
 summary(nitrogen.lm.all.age)
-# explain a bit more variation with age included: 0.08062 vs 0.05773
+# explain a bit more variation with age included: 0.07785 vs 0.05542
 
 final.model.stats[3,] <- c("carbon", "ngrip", "carbon.lm.all.additive", 
                            Regressionp(carbon.lm.all.additive), summary(carbon.lm.all.additive)$adj)
@@ -295,7 +295,7 @@ write.csv(temp.table, file="output/SupplementaryTable2.csv", row.names=F)
 
 # Final additional plot - age of Squirrels vs rabbits ----
 age_ttest<- t.test(specimen_medianage~Taxon, data=matchedDF_all)
-
+# note from Nate - specimen_medianage does not exist in this script 
 pdf(file="output/SuppFigY_taxon_age_distribution.pdf", height=6, width=6)
 boxplot(specimen_medianage~Taxon, data=matchedDF_all, 
         ylim=c(55000, 0), 

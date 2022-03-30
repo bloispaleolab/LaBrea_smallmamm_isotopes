@@ -317,7 +317,7 @@ write.csv(matchedDF_all, file="data/processed/final_dataset_focaltaxa_with_calag
 # P3_L
 
 
-# Figure 5 dataset ----
+# Figure 3 dataset ----
 # Read in data
 megaherbivoreDat <- read.csv(file="data/raw/rlb_data_extinct.csv", header=T)
 
@@ -342,5 +342,5 @@ herbivoreDat <- trimmedDat %>%
 
 colnames(megaherbivoreDat)[6:7] <- colnames(herbivoreDat)[6:7]
 
-fig5Dat <- rbind(megaherbivoreDat, herbivoreDat)
-write.csv(fig5Dat, file="data/processed/final_dataset_Figure5.csv", row.names = F) 
+fig3Dat <- rbind(megaherbivoreDat, herbivoreDat)
+write.csv(fig3Dat, file="data/processed/final_dataset_Figure3.csv", row.names = F) 

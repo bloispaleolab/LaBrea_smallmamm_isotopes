@@ -4,13 +4,13 @@ library(tidyverse)
 library(readr)
 
 # plot the isotope data - using ggplot2 ####
-fig5Dat<- read_csv(file="data/processed/final_dataset_Figure5.csv", col_names=T, trim_ws=T)
+fig3Dat<- read_csv(file="data/processed/final_dataset_Figure3.csv", col_names=T, trim_ws=T)
 
-fig5Dat$Taxon <- as.factor(fig5Dat$Taxon)
-fig5Dat$Time <- as.factor(fig5Dat$Time)
-fig5Dat$Group <- as.factor(fig5Dat$Group)
+fig3Dat$Taxon <- as.factor(fig3Dat$Taxon)
+fig3Dat$Time <- as.factor(fig3Dat$Time)
+fig3Dat$Group <- as.factor(fig3Dat$Group)
 
-fig5Dat<- fig5Dat %>%
+fig3Dat<- fig3Dat %>%
   arrange(Group) %>%
   mutate(Taxon = fct_relevel(Taxon, 
                              "Bison", "Camelops", "Equus", "Mammut", "Paramylodon", "Neotoma", "Otospermophilus", "Sylvilagus", "Thomomys"), Group = fct_relevel(Group, "Megaherbivore", "Herbivore"), Time = fct_relevel(Time, "Holocene", "Pleistocene"))
@@ -25,7 +25,7 @@ labelColors <- c("Bison" = "gray20",
                  "Sylvilagus" = "darkorange",
                  "Thomomys" = "red3")
 
-first.plot <- ggplot(data = fig5Dat, 
+first.plot <- ggplot(data = fig3Dat, 
                      aes(x = del13C_permil, y = del15N_permil)) +
                        geom_point(aes(colour = Taxon, 
                                       shape = Time)) +
@@ -44,7 +44,7 @@ first.plot <- ggplot(data = fig5Dat,
 
     
 # error bars
-sbg <- fig5Dat %>% 
+sbg <- fig3Dat %>% 
   group_by(Taxon, Time) %>% 
   summarise(count = n(),
             mC = mean(del13C_permil), 
@@ -70,6 +70,7 @@ second.plot <- first.plot+
              alpha = 0.5, show.legend = FALSE) +
   scale_fill_manual(values=labelColors)
 
-grDevices::cairo_pdf("output/Figure5_v2_witherrorbars.pdf", width=6, height=4)
+#grDevices::cairo_pdf("output/Figure3_v2_witherrorbars.pdf", width=6, height=4)
+pdf(file="output/Figure3_v2_witherrorbars-NF.pdf", height=4, width=6)
   print(second.plot) 
 dev.off()

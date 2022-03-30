@@ -2,17 +2,19 @@
 
 # Figure 1 plot - in script 4b
 # Figure 2 plot - in script 4d
-# Figure 3 plot - here
+# Figure 3 plot - in script Figure_3
 # Figure 4 plot - here
+# Figure 5 plot - here
 
 # Read in data ----
 matchedDF_all <- read.csv(file="data/processed/final_dataset_focaltaxa_with_calages_climate.csv", header=T) # 
 load(file="output/hendy_models_for_plotting.RData") # saved models
 
-### Figure 3 ----
+### Figure 4 ----
 
-#grDevices::pdf("output/Figure3_lm_carbon_nitrogen_all_July2021_NF.pdf", width=8, height=8)
-grDevices::cairo_pdf("output/Figure3_lm_carbon_nitrogen_all.pdf", width=8, height=8)
+#grDevices::pdf("output/Figure4_lm_carbon_nitrogen_all_July2021_NF.pdf", width=8, height=8)
+#grDevices::cairo_pdf("output/Figure4_lm_carbon_nitrogen_all.pdf", width=8, height=8)
+pdf(file="output/Figure4_lm_carbon_nitrogen_all-NF.pdf", height=8, width=8)
 
 layout(matrix(seq(1:6), ncol=2, nrow=3, byrow=F), heights=c(2.5,2.5,1))
 par(mar=c(4,4,1,1), cex.axis=1, bty="l")
@@ -86,9 +88,9 @@ dev.off()
 
 # I haven't put A-D labels on them yet.
 # Figure caption text.
-# Figure 3. The relationship between isotope niche and climate. A) & C) show the relationship between 13C or 15N, respectively, and 18O.  In both panels, the dashed line indicates the fitted relationship between 13C or 15N and 18O from the final model which  includes Taxon as an independent variable. The solid line indicates the fitted relationship between 13C or 15N and 18O from a linear model that just includes 18O as the independent variable. B) & D) indicate the residuals from the climate-only model, plotted by taxon.
+# Figure 4. The relationship between isotope niche and climate. A) & C) show the relationship between 13C or 15N, respectively, and 18O.  In both panels, the dashed line indicates the fitted relationship between 13C or 15N and 18O from the final model which  includes Taxon as an independent variable. The solid line indicates the fitted relationship between 13C or 15N and 18O from a linear model that just includes 18O as the independent variable. B) & D) indicate the residuals from the climate-only model, plotted by taxon.
 
-### Figure 4 ----
+### Figure 5 ----
 #plot carbon and climate thru time
 
 # order matchedDF_all
@@ -96,8 +98,9 @@ matchedDF_all <- matchedDF_all[order(matchedDF_all$median_age),]
 # read in hendy data 
 hendyDat<- read.delim("data/raw/climate/hendy2002data.txt")
 
-#grDevices::pdf(file="output/Figure4_carbon_climate_time_updated_NF.pdf", height=6, width=8)
-grDevices::cairo_pdf(file="output/Figure4_carbon_climate_time_updated_Mar2022_JB.pdf", height=6, width=8)
+#grDevices::pdf(file="output/Figure5_carbon_climate_time_updated_NF.pdf", height=6, width=8)
+#grDevices::cairo_pdf(file="output/Figure5_carbon_climate_time_updated_Mar2022_JB.pdf", height=6, width=8)
+pdf(file="output/Figure5_carbon_climate_time_updated_Mar2022-NF.pdf", height=6, width=8)
 
 layout(matrix(seq(1:2), ncol=1, nrow=2), heights=c(0.75,1))
 par(mar=c(4,5,0,5), cex.axis=1, bty="l", xpd=F)

@@ -720,6 +720,9 @@ save(obs.overlap.PS.PO, bayes.overlap.PS.PO, file="output/overlap_PS.PO.RData")
 obs.overlap.HS.HO <- maxLikOverlap("Holocene.Sylvilagus", 
                                    "Holocene.Otospermophilus", 
                                    siber.data.all.obj, p = 0.95, n = 100)
+#'Error in verify.xypolygon(P) : x and y coordinates must not contain NA values'
+#Nate comments - ran is.na(siber.data.all.obj), all list objects returned FALSE. Not
+#sure what the issue is here 
 
 # calculate max likelihood proportion overlaps
 prop.overlap.both <- as.numeric(obs.overlap.HS.HO["overlap"] / 

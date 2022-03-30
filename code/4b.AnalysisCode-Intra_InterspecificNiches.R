@@ -214,7 +214,8 @@ syl.col[which(syl.col=="S. bachmani")] <- "red1"
 syl.col[which(syl.col=="S. audubonii")] <- "gold1"
 colorlist <- list(oto.col, syl.col)
 
-grDevices::cairo_pdf("output/Figure1_niche_boxplots_Feb2022_JB.pdf", width=8, height=8)
+pdf(file="output/Figure1_niche_boxplots_Mar2022_NF.pdf", height=8, width=8)
+#grDevices::cairo_pdf("output/Figure1_niche_boxplots_Feb2022_JB.pdf", width=8, height=8)
 par(bty="l", mfcol=c(2,2), mar=c(4,4,1,1)+0.1)
 
 ## Inter-specific ----

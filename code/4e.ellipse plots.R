@@ -90,8 +90,8 @@ figure <- ggarrange(new.alldata.taxa.ellipse.plot,
                     new.alldata.time.ellipse.plot, 
                     labels = c("A", "B"),
                     ncol = 2, nrow = 1)
-
-grDevices::cairo_pdf("output/Figure2_SIBERplots_Mar2022_JLB_both.pdf", width=12, height=4)
+pdf(file="output/Figure2_SIBERplots_Mar2022_NF.pdf", height=4, width=12)
+#grDevices::cairo_pdf("output/Figure2_SIBERplots_Mar2022_JLB_both.pdf", width=12, height=4)
 print(figure)
 dev.off()
 
