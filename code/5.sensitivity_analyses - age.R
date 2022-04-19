@@ -171,9 +171,8 @@ summary(carbon.lm.clim)
 nitrogen.lm.clim<-lm(del15N_permil ~ d18O_hendy, data=matchedDF_all)
 summary(nitrogen.lm.clim)
 
-# grDevices::pdf("output/SuppFigure1_climate_sensitivity_R2andcoeff.pdf", width=8, height=6)
-pdf(file="output/SuppFigure1_climate_sensitivity_R2andcoeff-NF.pdf", height=6, width=8)
-#grDevices::cairo_pdf("output/SuppFigure1_climate_sensitivity_R2andcoeff.pdf", width=8, height=6)
+# pdf(file="output/SuppFigure1_climate_sensitivity_R2andcoeff-NF.pdf", height=6, width=8)
+ grDevices::cairo_pdf("output/SuppFigure1_climate_sensitivity_R2andcoeff.pdf", width=8, height=6)
 
 par(mfrow=c(2,2)) 
 
