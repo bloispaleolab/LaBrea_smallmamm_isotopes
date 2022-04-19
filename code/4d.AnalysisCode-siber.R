@@ -723,16 +723,17 @@ obs.overlap.HS.HO <- maxLikOverlap("Holocene.Sylvilagus",
 #'Error in verify.xypolygon(P) : x and y coordinates must not contain NA values'
 #Nate comments - ran is.na(siber.data.all.obj), all list objects returned FALSE. Not
 #sure what the issue is here 
+# JLB: Yes, I get the same error - I think it's because you can't make a polygon with only 2 points. Doesn't affect Table 2 (which is written on line 605)
 
-# calculate max likelihood proportion overlaps
-prop.overlap.both <- as.numeric(obs.overlap.HS.HO["overlap"] / 
-                                  (obs.overlap.HS.HO["area.1"] + obs.overlap.HS.HO["area.2"]))
-prop.overlap.HS <- as.numeric(obs.overlap.HS.HO["overlap"] / 
-                                obs.overlap.HS.HO["area.1"])
-prop.overlap.HO <- as.numeric(obs.overlap.HS.HO["overlap"] / 
-                                obs.overlap.HS.HO["area.2"])
-obs.overlap.HS.HO <- c(obs.overlap.HS.HO, prop.overlap.both, prop.overlap.HS, prop.overlap.HO)
-names(obs.overlap.HS.HO)[4:6] <- c('prop.overlap.both', 'prop.overlap.HS', 'prop.overlap.HO')
+# # calculate max likelihood proportion overlaps
+# prop.overlap.both <- as.numeric(obs.overlap.HS.HO["overlap"] / 
+#                                   (obs.overlap.HS.HO["area.1"] + obs.overlap.HS.HO["area.2"]))
+# prop.overlap.HS <- as.numeric(obs.overlap.HS.HO["overlap"] / 
+#                                 obs.overlap.HS.HO["area.1"])
+# prop.overlap.HO <- as.numeric(obs.overlap.HS.HO["overlap"] / 
+#                                 obs.overlap.HS.HO["area.2"])
+# obs.overlap.HS.HO <- c(obs.overlap.HS.HO, prop.overlap.both, prop.overlap.HS, prop.overlap.HO)
+# names(obs.overlap.HS.HO)[4:6] <- c('prop.overlap.both', 'prop.overlap.HS', 'prop.overlap.HO')
 
 # calculate bayes overlap distribution
 bayes.overlap.HS.HO <- bayesianOverlap("Holocene.Sylvilagus", 
@@ -749,20 +750,20 @@ bayes.overlap.HS.HO <- cbind(bayes.overlap.HS.HO, bayes.prop.overlap.both,
 # save objects
 save(obs.overlap.HS.HO, bayes.overlap.HS.HO, file="output/overlap_HS.HO.RData")
 
-#sylvilagus
-obs.overlap.PS.HS <- maxLikOverlap("Pleistocene.Sylvilagus", 
-                                   "Holocene.Sylvilagus", 
-                                   siber.data.all.obj, p = 0.95, n = 100)
+# #sylvilagus
+# obs.overlap.PS.HS <- maxLikOverlap("Pleistocene.Sylvilagus", 
+#                                    "Holocene.Sylvilagus", 
+#                                    siber.data.all.obj, p = 0.95, n = 100)
 
-# calculate max likelihood proportion overlaps
-prop.overlap.both <- as.numeric(obs.overlap.PS.HS["overlap"] / 
-                                  (obs.overlap.PS.HS["area.1"] + obs.overlap.PS.HS["area.2"]))
-prop.overlap.PS <- as.numeric(obs.overlap.PS.HS["overlap"] / 
-                                obs.overlap.PS.HS["area.1"])
-prop.overlap.HS <- as.numeric(obs.overlap.PS.HS["overlap"] / 
-                                obs.overlap.PS.HS["area.2"])
-obs.overlap.PS.HS <- c(obs.overlap.PS.HS, prop.overlap.both, prop.overlap.PS, prop.overlap.HS)
-names(obs.overlap.PS.HS)[4:6] <- c('prop.overlap.both', 'prop.overlap.PS', 'prop.overlap.HS')
+# # calculate max likelihood proportion overlaps
+# prop.overlap.both <- as.numeric(obs.overlap.PS.HS["overlap"] / 
+#                                   (obs.overlap.PS.HS["area.1"] + obs.overlap.PS.HS["area.2"]))
+# prop.overlap.PS <- as.numeric(obs.overlap.PS.HS["overlap"] / 
+#                                 obs.overlap.PS.HS["area.1"])
+# prop.overlap.HS <- as.numeric(obs.overlap.PS.HS["overlap"] / 
+#                                 obs.overlap.PS.HS["area.2"])
+# obs.overlap.PS.HS <- c(obs.overlap.PS.HS, prop.overlap.both, prop.overlap.PS, prop.overlap.HS)
+# names(obs.overlap.PS.HS)[4:6] <- c('prop.overlap.both', 'prop.overlap.PS', 'prop.overlap.HS')
 
 # calculate bayes overlap distribution
 bayes.overlap.PS.HS <- bayesianOverlap("Pleistocene.Sylvilagus", 
