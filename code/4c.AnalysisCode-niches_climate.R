@@ -294,10 +294,8 @@ write.csv(temp.table, file="output/SupplementaryTable2.csv", row.names=F)
 
 
 # Final additional plot - age of Squirrels vs rabbits ----
-#age_ttest<- t.test(specimen_medianage~Taxon, data=matchedDF_all)
-# note from Nate - specimen_medianage does not exist in this script, I assume matchedDF_all$median_age should be used here 
 age_ttest<- t.test(median_age~Taxon, data=matchedDF_all)
-pdf(file="output/SuppFig2_taxon_age_distribution-NF.pdf", height=6, width=6)
+pdf(file="output/SuppFig2_taxon_age_distribution.pdf", height=6, width=6)
 boxplot(median_age~Taxon, data=matchedDF_all, 
         ylim=c(55000, 0), 
         xlab="", ylab="Median Specimen Age (cal years BP)")
