@@ -24,11 +24,22 @@ labelColors <- c("Bison" = "gray20",
                  "Otospermophilus" = "royalblue2",
                  "Sylvilagus" = "darkorange",
                  "Thomomys" = "red3")
+# error bars
+sbg <- fig3Dat %>% 
+  group_by(Taxon, Time) %>% 
+  summarise(count = n(),
+            mC = mean(del13C_permil), 
+            sdC = sd(del13C_permil), 
+            mN = mean(del15N_permil), 
+            sdN = sd(del15N_permil))
+sbg.shape.code <- c(22,22,22,22,22,22, 21, 22, 21, 22, 22)
+sbg.color.code <- c("gray20", "gray30", "gray40", "gray50", "gray60", "forestgreen", "royalblue2", "royalblue2", "darkorange", "darkorange", "red3")
+
 
 first.plot <- ggplot(data = fig3Dat, 
                      aes(x = del13C_permil, y = del15N_permil)) +
                        geom_point(aes(colour = Taxon, 
-                                      shape = Time)) +
+                                      shape = Time), alpha=0.5) +
                        scale_size_manual(values = c(1, 2)) +
                        scale_color_manual(values=labelColors) +
   ylab(expression({delta}^15*N~'value ('~'\u2030'~', AIR)')) +
@@ -38,39 +49,30 @@ first.plot <- ggplot(data = fig3Dat,
         axis.ticks.length = unit(0.15, "cm"),
         legend.title = element_text(size=12), 
         legend.key.size = unit(0.4, 'cm')) + 
+  guides(color = guide_legend(override.aes = list(alpha = 1))) +
   labs(colour = "Taxon") 
 
   print(first.plot) 
-
-    
-# error bars
-sbg <- fig3Dat %>% 
-  group_by(Taxon, Time) %>% 
-  summarise(count = n(),
-            mC = mean(del13C_permil), 
-            sdC = sd(del13C_permil), 
-            mN = mean(del15N_permil), 
-            sdN = sd(del15N_permil))
 
 second.plot <- first.plot+
   geom_errorbar(data = sbg, 
                 mapping = aes(x = mC, y = mN,
                               ymin = mN - 1.96*sdN, 
                               ymax = mN + 1.96*sdN), 
-                width = 0, color="darkgray", alpha=0.5) +
+                width = 0, color=sbg.color.code, alpha=1) +
   geom_errorbarh(data = sbg, 
                  mapping = aes(x = mC, y = mN,
                                xmin = mC - 1.96*sdC,
                                xmax = mC + 1.96*sdC),
-                 height = 0, color="darkgray", alpha=0.5) + 
+                 height = 0, color=sbg.color.code, alpha=1) + 
   geom_point(data = sbg, aes(x = mC, 
                              y = mN,
                              fill = Taxon), 
-             color = "darkgray", shape = 22, size = 4,
-             alpha = 0.5, show.legend = FALSE) +
+             color = "black", shape = sbg.shape.code, size = 4,
+             alpha = 1, show.legend = FALSE) +
   scale_fill_manual(values=labelColors)
 
-#grDevices::cairo_pdf("output/Figure3_v2_witherrorbars.pdf", width=6, height=4)
-pdf(file="output/Figure3_v2_witherrorbars-NF.pdf", height=4, width=6)
+grDevices::cairo_pdf("output/Figure3_v3_witherrorbars_Sep2022.pdf", width=6, height=4)
+#pdf(file="output/Figure3_v2_witherrorbars-NF.pdf", height=4, width=6)
   print(second.plot) 
 dev.off()
