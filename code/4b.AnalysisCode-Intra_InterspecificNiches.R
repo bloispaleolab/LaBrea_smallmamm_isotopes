@@ -198,14 +198,14 @@ N.rabbits.res$mean[1] - N.rabbits.res$mean[2]
  # to sync up Sylvilagus color scheme across panels
 
 # create new dataframes and colors
-#data
+#data - genus
 Cdatalist <- list(iso_dat$del13C_permil[which(iso_dat$Taxon=="Otospermophilus")],
                   iso_dat$del13C_permil[which(iso_dat$Taxon=="Sylvilagus")])
 
 Ndatalist <- list(iso_dat$del15N_permil[which(iso_dat$Taxon=="Otospermophilus")],
                   iso_dat$del15N_permil[which(iso_dat$Taxon=="Sylvilagus")])
 
-# colors
+# colors - genus
 oto.col<- rep("royalblue2", length(Ndatalist[[1]]))
 syl.col <- iso_dat$Species[which(iso_dat$Taxon=="Sylvilagus")]
 syl.col[which(syl.col=="Leporidae")] <- "darkorange" # assuming this is Sylvilagus sp.
@@ -214,8 +214,20 @@ syl.col[which(syl.col=="S. bachmani")] <- "red1"
 syl.col[which(syl.col=="S. audubonii")] <- "gold1"
 colorlist <- list(oto.col, syl.col)
 
-pdf(file="output/Figure1_niche_boxplots_Mar2022_NF.pdf", height=8, width=8)
-#grDevices::cairo_pdf("output/Figure1_niche_boxplots_Feb2022_JB.pdf", width=8, height=8)
+#data - rabbits
+S_Cdatalist <- list(iso_rabbits$del13C_permil[which(iso_rabbits$Species=="S. audubonii")],
+                    iso_rabbits$del13C_permil[which(iso_rabbits$Species=="S. bachmani")])
+
+S_Ndatalist <- list(iso_rabbits$del15N_permil[which(iso_rabbits$Species=="S. audubonii")],
+                    iso_rabbits$del15N_permil[which(iso_rabbits$Species=="S. bachmani")])
+
+# colors - rabbits
+sa.col <- rep("gold1", length(which(iso_rabbits$Species == "S. audubonii"))) 
+sb.col <- rep("red1", length(which(iso_rabbits$Species == "S. bachmani")))
+rabbit_colorlist <- list(sa.col, sb.col)
+
+#pdf(file="output/Figure1_niche_boxplots_Mar2022_NF.pdf", height=8, width=8)
+grDevices::cairo_pdf("output/Figure1_niche_boxplots_Sep2022_JB.pdf", width=8, height=8)
 par(bty="l", mfcol=c(2,2), mar=c(4,4,1,1)+0.1)
 
 ## Inter-specific ----
@@ -255,7 +267,10 @@ legend("top", legend=paste0("W = ", wilcox.n.taxon$statistic, "; p = ", round(wi
 # create basic boxplot
 boxplot(del13C_permil ~ Species, data=iso_rabbits, col = "white", ylab = "", cex.axis=0.75)
 # add individual data points
-stripchart(del13C_permil ~ Species, data=iso_rabbits, vertical=TRUE, add=TRUE, method="jitter", pch=21, col="black", bg=c("gold1","red1"), lwd=0.5)
+for (i in 1:2) { 
+  stripchart(na.omit(S_Cdatalist[[i]]), at = i, add = T, pch = 21, 
+             bg = rabbit_colorlist[[i]], lwd=0.5, vertical = T, method = "jitter") 
+}
 mtext(expression({delta}^13*C~'value ('~'\u2030'~', VPDB)'), side=2, line = 2.25)
 legend("top", legend=paste0("W = ", wilcox.c.rabbits$statistic, "; p = ", round(wilcox.c.rabbits$p.value, 3)), bty="n", cex=0.75)
 
@@ -263,11 +278,17 @@ legend("top", legend=paste0("W = ", wilcox.c.rabbits$statistic, "; p = ", round(
 # create basic boxplot
 boxplot(del15N_permil ~ Species, data=iso_rabbits, col = "white", ylab = "", cex.axis=0.75)
 # add individual data points
-stripchart(del15N_permil ~ Species, data=iso_rabbits, vertical=TRUE, add=TRUE, method="stack", pch=21, col="black", bg=c("gold1","red1"), lwd=0.5)
+for (i in 1:2) { 
+  stripchart(na.omit(S_Ndatalist[[i]]), at = i, add = T, pch = 21, 
+             bg = rabbit_colorlist[[i]], lwd=0.5, vertical = T, method = "jitter") 
+}
 mtext(expression({delta}^15*N~'value ('~'\u2030'~', AIR)'), side=2, line = 2.25)
 legend("top", legend=paste0("W = ", wilcox.n.rabbits$statistic, "; p = ", round(wilcox.n.rabbits$p.value, 3)), bty="n", cex=0.75)
 
 dev.off()
 
+
+# stripchart(del13C_permil ~ Species, data=iso_rabbits, vertical=TRUE, add=TRUE, method="jitter", pch=21, col="black", bg=c("gold1","red1"), lwd=0.5)
+# stripchart(del15N_permil ~ Species, data=iso_rabbits, vertical=TRUE, add=TRUE, method="stack", pch=21, col="black", bg=c("gold1","red1"), lwd=0.5)
 
 # In Illustrator: Add A,B,C,D labels, italicize taxon names, move jittered points over to outliers.
