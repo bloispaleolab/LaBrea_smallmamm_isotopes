@@ -32,7 +32,7 @@ sbg <- fig3Dat %>%
             sdC = sd(del13C_permil), 
             mN = mean(del15N_permil), 
             sdN = sd(del15N_permil))
-sbg.shape.code <- c(22,22,22,22,22,22, 21, 22, 21, 22, 22)
+sbg.shape.code <- c(24,24,24,24,24,24, 21, 24, 21, 24, 24)
 sbg.color.code <- c("gray20", "gray30", "gray40", "gray50", "gray60", "forestgreen", "royalblue2", "royalblue2", "darkorange", "darkorange", "red3")
 
 
