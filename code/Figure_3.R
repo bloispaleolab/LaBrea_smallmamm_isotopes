@@ -72,7 +72,29 @@ second.plot <- first.plot+
              alpha = 1, show.legend = FALSE) +
   scale_fill_manual(values=labelColors)
 
-grDevices::cairo_pdf("output/Figure3_v3_witherrorbars_Sep2022.pdf", width=6, height=4)
+grDevices::cairo_pdf("output/Figure3_v3_witherrorbars_Nov2022.pdf", width=6, height=4)
 #pdf(file="output/Figure3_v2_witherrorbars-NF.pdf", height=4, width=6)
   print(second.plot) 
 dev.off()
+
+fig3dat_mega <-  filter(fig3Dat, Group =="Megaherbivore")
+fig3dat_micro <-  filter(fig3Dat, Group =="Herbivore")
+p.ell <- 0.68
+test <- first.plot + 
+  stat_ellipse(data = fig3dat_mega, 
+             aes(x = del13C_permil, 
+                 y = del15N_permil, color=Taxon), 
+             linetype = 1,
+             alpha = 0.1, 
+             level = p.ell,
+             type = "norm",
+             geom = "polygon") +
+  stat_ellipse(data = fig3dat_micro, 
+               aes(x = del13C_permil, 
+                   y = del15N_permil, color=Taxon), 
+               linetype = 1,
+               alpha = 0.1, 
+               level = p.ell,
+               type = "norm",
+               geom = "polygon")
+
