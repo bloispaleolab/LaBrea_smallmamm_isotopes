@@ -219,7 +219,7 @@ rm(d18O_hendy_medianage)
 rm(d18O_ngrip_medianage)
 
 ### at end of Section 3, have 2 main files for later use: ###
-# allAges_d18O (stores both ngrip and hendy)
+# allAges_d18O (stores both ngrip and hendy across the full probability distrubtion of each sample age)
 # sample_median_ages (stores both ngrip and hendy)
 
 ## Section 4: additional data cleaning ----
