@@ -90,10 +90,29 @@ second.plot_new <- first.plot_new +
   scale_fill_manual(values=labelColors) +
   scale_linetype_manual(values = lineTypes ) +
   scale_color_manual(values=labelColors)
-  
 #grDevices::cairo_pdf(file="output/Figure3_v4_megaherbivore_ellipses.pdf", height=4, width=6)
 pdf(file="output/Figure3_v4_megaherbivore_ellipses.pdf", height=4, width=6)
 print(second.plot_new) 
+dev.off()
+
+second.plot_new2 <- first.plot_new + 
+  stat_ellipse(data = fig3dat_mega, 
+               aes(x = del13C_permil, 
+                   y = del15N_permil, color=Taxon, linetype=Taxon, fill=Taxon),
+               alpha = 0.8, level = p.ell, type = "norm", geom = "polygon") +
+  stat_ellipse(data = fig3dat_micro, 
+               aes(x = del13C_permil, 
+                   y = del15N_permil, color=Taxon, linetype=Taxon, fill=Taxon),
+               alpha = 0.5, level = p.ell, type = "norm", geom = "polygon")+
+  scale_fill_manual(values=labelColors) +
+  scale_linetype_manual(values = lineTypes ) +
+  scale_color_manual(values=labelColors)+
+  geom_point(data = fig3dat_micro,
+             aes(colour = Taxon, shape = Time), alpha=1, size=3) 
+ 
+grDevices::cairo_pdf(file="output/Figure3_v4_megaherbivore_ellipses.pdf", height=4, width=6)
+#pdf(file="output/Figure3_v4_megaherbivore_ALLellipses.pdf", height=4, width=6)
+print(second.plot_new2) 
 dev.off()
 
 # note: cairo_pdf gets the axes labels right, but the linetype symbology is not as differentiated. Used cairo_pdf to generate axes to copy over, but used pdf for main plot.
