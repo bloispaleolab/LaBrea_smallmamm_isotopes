@@ -110,8 +110,8 @@ second.plot_new2 <- first.plot_new +
   geom_point(data = fig3dat_micro,
              aes(colour = Taxon, shape = Time), alpha=1, size=3) 
  
-grDevices::cairo_pdf(file="output/Figure3_v4_megaherbivore_ellipses.pdf", height=4, width=6)
-#pdf(file="output/Figure3_v4_megaherbivore_ALLellipses.pdf", height=4, width=6)
+#grDevices::cairo_pdf(file="output/Figure3_v4_megaherbivore_ALLellipses.pdf", height=4, width=6)
+pdf(file="output/Figure3_v4_megaherbivore_ALLellipses.pdf", height=4, width=6)
 print(second.plot_new2) 
 dev.off()
 
